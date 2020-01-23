@@ -1,0 +1,20 @@
+query pullRequestByRepoAndBranch($owner: String!, $repo: String!, $branch: String!) {
+    PullRequest(state: "open", baseBranchName: $branch) {
+        number
+        repo(owner: $owner, name: $repo) @required {
+            owner
+            name
+            org {
+                provider {
+                    providerId
+                    apiUrl
+                }
+            }
+        }
+        branchName
+        baseBranchName @required
+        labels(name: "auto-rebase:on-push") @required {
+            name
+        }
+    }
+}

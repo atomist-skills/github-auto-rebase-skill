@@ -1,0 +1,19 @@
+subscription RebaseOnPush {
+    Push {
+        after {
+            sha
+            author {
+                login
+            }
+        }
+        commits {
+            sha
+            message
+        }
+        repo {
+            owner
+            name
+        }
+        branch
+    }
+}
