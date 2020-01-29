@@ -2,7 +2,7 @@
 
 Automatically rebase a pull request branch if there are branches to the base branch.
 
-## Usage
+## Usage 
 
 ### Enable Auto-Rebase
 
