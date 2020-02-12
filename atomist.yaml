@@ -15,7 +15,7 @@
 # 
     
 skill:
-  name: "atomist/github-auto-rebase-skill"
+  name: atomist/github-auto-rebase-skill
   title: GitHub Auto-rebase pull request
   version: 0.1.1
   author: Atomist
@@ -29,9 +29,10 @@ skill:
   icon: https://images.atomist.com/rug/flow.png
 
   package:
-    - use: 'atomist/package-sdm-skill/package'
+    - use: atomist/package-sdm-skill/package
       parameters:
-        main: 'node_modules/@atomist/skill/lib/function.js'
+        main: node_modules/@atomist/skill/lib/function.js
+        dependencies: keep
 
   runtime:
     memory: 1024
