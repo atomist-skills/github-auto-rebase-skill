@@ -69,7 +69,7 @@ export const handler: EventHandler<RebaseOnPushSubscription, RebaseConfiguration
         branch: push.branch,
     });
 
-    if (!!prs?.PullRequest) {
+    if (!!prs?.PullRequest && prs.PullRequest.length > 0) {
 
         const commits = push.commits.map(c => `- ${c.sha.slice(0, 7)} _${truncateCommitMessage(c.message, push.repo)}_`).join("\n");
 
