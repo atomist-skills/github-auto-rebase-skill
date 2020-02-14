@@ -98,7 +98,7 @@ ${commits}`);
                 await GitHubPullRequestCommentUpdater(
                     comment,
                     credential,
-                    `Pull request rebase failed because branch **${pr.branchName}** couldn't be checked out.`);
+                    `Pull request rebase failed because branch **${pr.branchName}** couldn't be checked out`);
                 return;
             }
             try {
@@ -130,15 +130,14 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
                 await GitHubPullRequestCommentUpdater(
                     comment,
                     credential,
-                    `Pull request rebase failed because force push to **${pr.branchName}** errored.`);
+                    `Pull request rebase failed because force push to **${pr.branchName}** errored`);
                 return;
             }
 
             await GitHubPullRequestCommentUpdater(
                 comment,
                 credential,
-                `Pull request was successfully rebased onto ${push.after.sha.slice(0, 7)} by @${push.after.author.login}:
-${commits}`);
+                `Pull request was successfully rebased onto ${push.after.sha.slice(0, 7)} by @${push.after.author.login}`);
 
         }
     }
