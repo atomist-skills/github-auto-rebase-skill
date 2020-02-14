@@ -37,11 +37,37 @@ interface RebaseConfiguration {
     strategy?: "ours" | "theirs";
 }
 
+const PullRequestByRepoAndBranchQuery = `query PullRequestByRepoAndBranch($owner: String!, $repo: String!, $branch: String!) {
+    PullRequest(state: "open", baseBranchName: $branch) {
+        number
+        repo(owner: $owner, name: $repo) @required {
+            owner
+            name
+            org {
+                provider {
+                    providerId
+                    apiUrl
+                }
+            }
+        }
+        branchName
+        baseBranchName @required
+        labels(name: "auto-rebase:on-push") @required {
+            name
+        }
+    }
+}
+`;
+
 export const handler: EventHandler<RebaseOnPushSubscription, RebaseConfiguration> = async ctx => {
     const push = ctx.data.Push[0];
 
     // Check if there is an open PR against the branch this push is on
-    const prs = await ctx.graphql.query<PullRequestByRepoAndBranchQuery>("", {});
+    const prs = await ctx.graphql.query<PullRequestByRepoAndBranchQuery>(PullRequestByRepoAndBranchQuery, {
+        owner: push.repo.owner,
+        repo: push.repo.name,
+        branch: push.branch,
+    });
 
     if (!!prs?.PullRequest) {
 
