@@ -99,7 +99,10 @@ ${commits}`);
                     comment,
                     credential,
                     `Pull request rebase failed because branch **${pr.branchName}** couldn't be checked out`);
-                return;
+                return {
+                    code: 0,
+                    reason: `Pull request ${pr.repo.owner}/${pr.repo.name}#${pr.number} rebase failed because branch **${pr.branchName}** couldn't be checked out`,
+                };
             }
             try {
                 const args = [];
@@ -119,7 +122,10 @@ ${commits}`);
                     `Pull request rebase to ${push.after.sha.slice(0, 7)} by @${
                         push.after.author.login} failed because of following conflicting ${conflicts.length === 1 ? "file" : "files"}:
 ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
-                return;
+                return {
+                    code: 0,
+                    reason: `Pull request ${pr.repo.owner}/${pr.repo.name}#${pr.number} rebase failed because of conflicts`,
+                };
             }
 
             try {
@@ -131,17 +137,28 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
                     comment,
                     credential,
                     `Pull request rebase failed because force push to **${pr.branchName}** errored`);
-                return;
+                return {
+                    code: 0,
+                    reason: `Pull request ${pr.repo.owner}/${pr.repo.name}#${pr.number} rebase failed because force push errored`,
+                };
             }
 
             await GitHubPullRequestCommentUpdater(
                 comment,
                 credential,
                 `Pull request was successfully rebased onto ${push.after.sha.slice(0, 7)} by @${push.after.author.login}`);
+            return {
+                code: 0,
+                reason: `Pull request ${pr.repo.owner}/${pr.repo.name}#${pr.number} was successfully rebased onto ${push.after.sha.slice(0, 7)} by @${push.after.author.login}`,
+            };
 
         }
     }
 
+    return {
+        code: 0,
+        reason: `No open pull request that needs rebasing against branch ${push.branch}`,
+    };
 };
 
 export interface GitHubCommentDetails {
