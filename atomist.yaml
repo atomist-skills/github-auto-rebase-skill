@@ -17,7 +17,7 @@
 skill:
   name: atomist/github-auto-rebase-skill
   title: GitHub Auto-rebase pull request
-  version: 0.1.1
+  version: 1.0.0
   author: Atomist
   description: |
     Automatically rebase a pull request branch if there are pushes to the base branch
@@ -38,3 +38,21 @@ skill:
     memory: 1024
     name: nodejs10
     entry_point: entryPoint
+
+parameters:
+  - repo_filter:
+      name: repos
+      display_name: Repositories
+      description: Select for which repositories pull request auto-rebasing should be available
+      required: false
+  - single_choice:
+      name: strategy
+      display_name: Default Merge Strategy
+      description: |-
+        Git merge strategy used when rebasing pull request branches
+      options:
+        - text: Ours
+          value: ours
+        - text: Theirs
+          value: theirs
+      required: false

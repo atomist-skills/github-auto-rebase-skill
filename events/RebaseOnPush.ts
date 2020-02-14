@@ -33,7 +33,11 @@ import { truncateCommitMessage } from "./util";
 type PullRequestCommentCreator<T> = (pr: PullRequest, credential: GitHubAppCredential | GitHubCredential, body: string) => Promise<T>;
 type PullRequestCommentUpdater<T> = (comment: T, credential: GitHubAppCredential | GitHubCredential, body: string) => Promise<void>;
 
-export const handler: EventHandler<RebaseOnPushSubscription> = async ctx => {
+interface RebaseConfiguration {
+    strategy?: "ours" | "theirs";
+}
+
+export const handler: EventHandler<RebaseOnPushSubscription, RebaseConfiguration> = async ctx => {
     const push = ctx.data.Push[0];
 
     // Check if there is an open PR against the branch this push is on
@@ -72,7 +76,11 @@ ${commits}`);
                 return;
             }
             try {
-                await project.exec("git", ["rebase", `origin/${pr.baseBranchName}`]);
+                const args = [];
+                if (!!ctx.configuration?.parameters?.strategy) {
+                    args.push("-X", ctx.configuration.parameters.strategy);
+                }
+                await project.exec("git", ["rebase", ...args, `origin/${pr.baseBranchName}`]);
             } catch (e) {
                 console.warn("Failed to rebase PR branch: %s", e.message);
 
