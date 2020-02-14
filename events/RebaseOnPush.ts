@@ -116,7 +116,7 @@ ${commits}`);
                 await GitHubPullRequestCommentUpdater(
                     comment,
                     credential,
-                    `Pull request rebase to ${codeLine(push.after.sha.slice(0, 7))} by @${
+                    `Pull request rebase to ${push.after.sha.slice(0, 7)} by @${
                         push.after.author.login} failed because of following conflicting ${conflicts.length === 1 ? "file" : "files"}:
 ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
                 return;
@@ -137,7 +137,7 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
             await GitHubPullRequestCommentUpdater(
                 comment,
                 credential,
-                `Pull request was successfully rebased onto ${codeLine(push.after.sha.slice(0, 7))} by @${push.after.author.login}:
+                `Pull request was successfully rebased onto ${push.after.sha.slice(0, 7)} by @${push.after.author.login}:
 ${commits}`);
 
         }
