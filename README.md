@@ -1,8 +1,10 @@
 # `atomist/github-auto-rebase-skill`
 
+<!---atomist-skill-readme:start--->
+
 Automatically rebase a pull request branch if there are branches to the base branch.
 
-## Usage 
+## Configuration 
 
 ### Enable Auto-Rebase
 
@@ -12,7 +14,9 @@ To enable auto-rebasing, the following label has to be assigned to the pull requ
 
 ### Label Management
 
-The label is automatically added to the repository depending when this skill gets enabled.
+The rebase label is automatically added to configured repositories when a pull request gets raised.
+
+<!---atomist-skill-readme:end--->
 
 ---
 
