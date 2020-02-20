@@ -22,7 +22,8 @@ skill:
   description: |
     Automatically rebase a pull request branch if there are pushes to the base branch
   category:
-    - productivity
+    - CODE_REVIEW
+    - DEV_EX
   license: Apache-2.0
   homepage: https://github.com/atomist-skills/github-rebase-skill
   repository: https://github.com/atomist-skills/github-rebase-skill.git
