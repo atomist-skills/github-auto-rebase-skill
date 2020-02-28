@@ -1,5 +1,7 @@
 subscription ConvergePullRequestAutoRebaseLabels {
     PullRequest {
+        url
+        number
         action
         repo {
             owner
