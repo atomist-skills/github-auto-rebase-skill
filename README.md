@@ -19,7 +19,7 @@ The rebase label is automatically added to configured repositories when a pull r
 <!---atomist-skill-readme:end--->
 
 ---
-
+ 
 Created by [Atomist][atomist].
 Need Help?  [Join our Slack workspace][slack].
 
