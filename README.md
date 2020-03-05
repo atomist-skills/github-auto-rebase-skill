@@ -10,7 +10,7 @@ To enable auto-rebasing, add this label to the pull request:
 
 - `auto-rebase:on-push`
 
-The label is automatically added to the repository when this skill is enabled, and the label added to each new pull request.
+The label is automatically added to the repository when this skill is enabled.
 
 ## **Configuration**
 
