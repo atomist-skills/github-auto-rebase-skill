@@ -17,7 +17,7 @@
 skill:
   name: atomist/github-auto-rebase-skill
   title: Auto-rebase pull request
-  version: 2.0.2
+  version: 2.0.3
   author: Atomist
   description: |
     Automatically rebase a pull request branch if there are pushes to the base branch
