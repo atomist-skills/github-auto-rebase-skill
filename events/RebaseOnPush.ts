@@ -159,7 +159,7 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
                 `Pull request was successfully rebased onto ${push.after.sha.slice(0, 7)} by @${push.after.author.login}`);
             return {
                 code: 0,
-                reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) was successfully rebased onto ${push.after.sha.slice(0, 7)} by @${push.after.author.login}`,
+                reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) was successfully rebased onto [${push.after.sha.slice(0, 7)}](${push.after.url}) by @${push.after.author.login}`,
             };
 
         }

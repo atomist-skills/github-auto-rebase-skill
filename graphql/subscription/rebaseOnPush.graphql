@@ -1,6 +1,7 @@
 subscription RebaseOnPush {
     Push {
         after {
+            url
             sha
             author {
                 login
