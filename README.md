@@ -6,7 +6,7 @@ Any push to the base branch of a pull request branch will cause a rebase. For
 example, if open pull request branch `v2` has base branch `master`, and someone
 pushes a change to `master`, then `v2` will be rebased with the new commit(s) 
 to `master`.
-
+ 
 ### **Enable auto-rebase**
 
 To enable auto-rebasing, add this label to the pull request:
