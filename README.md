@@ -2,19 +2,23 @@
 
 <!---atomist-skill-readme:start--->
 
-Automatically rebase a pull request branch if there are branches to the base branch.
+Any push to the base branch of a pull request branch will cause a rebase. For example, if open pull request branch `v2` has base branch `master`, and someone pushes a change to `master`, then `v2` will be rebased with the new commit(s) to `master`.
 
-## Configuration 
+### **Enable auto-rebase**
 
-### Enable Auto-Rebase
+To enable auto-rebasing, add this label to the pull request:
 
-To enable auto-rebasing, the following label has to be assigned to the pull request:
+- `auto-rebase:on-push`
 
- * `auto-rebase:on-push`
+The label is automatically added to the repository when this skill is enabled, and the label added to each new pull request.
 
-### Label Management
+## **Configuration**
 
-The rebase label is automatically added to configured repositories when a pull request gets raised.
+### Which repositories
+
+By default, this skill will be enabled for all repositories in all organizations you have connected.
+To restrict the organizations or specific repositories on which the skill will run, you can explicitly
+choose organization(s) and repositories.
 
 <!---atomist-skill-readme:end--->
 
