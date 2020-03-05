@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { EventHandler } from "@atomist/skill/lib/handler";
+import {
+    EventContext,
+    EventHandler,
+} from "@atomist/skill/lib/handler";
+import { warn } from "@atomist/skill/lib/log";
 import { gitHubComRepository } from "@atomist/skill/lib/project";
 import {
     GitHubAppCredential,
@@ -30,8 +34,8 @@ import {
 } from "./types";
 import { truncateCommitMessage } from "./util";
 
-type PullRequestCommentCreator<T> = (pr: PullRequest, credential: GitHubAppCredential | GitHubCredential, body: string) => Promise<T>;
-type PullRequestCommentUpdater<T> = (comment: T, credential: GitHubAppCredential | GitHubCredential, body: string) => Promise<void>;
+type PullRequestCommentCreator<T> = (ctx: EventContext, pr: PullRequest, credential: GitHubAppCredential | GitHubCredential, body: string) => Promise<T>;
+type PullRequestCommentUpdater<T> = (ctx: EventContext, comment: T, credential: GitHubAppCredential | GitHubCredential, body: string) => Promise<void>;
 
 interface RebaseConfiguration {
     strategy?: "ours" | "theirs";
@@ -39,6 +43,7 @@ interface RebaseConfiguration {
 
 const PullRequestByRepoAndBranchQuery = `query PullRequestByRepoAndBranch($owner: String!, $repo: String!, $branch: String!) {
     PullRequest(state: "open", baseBranchName: $branch) {
+        url
         number
         repo(owner: $owner, name: $repo) @required {
             owner
@@ -78,6 +83,7 @@ export const handler: EventHandler<RebaseOnPushSubscription, RebaseConfiguration
             const credential = await ctx.credential.resolve(gitHubAppToken({ owner: repo.owner, repo: repo.name, apiUrl: repo.org.provider.apiUrl }));
 
             const comment = await GitHubPullRequestCommentCreator(
+                ctx,
                 pr,
                 credential,
                 `Pull request rebase is in progress because @${push.after.author.login} pushed ${push.commits.length} ${
@@ -94,29 +100,31 @@ ${commits}`);
             try {
                 await project.exec("git", ["checkout", pr.branchName]);
             } catch (e) {
-                console.warn("Failed to checkout PR branch: %s", e.message);
+                warn("Failed to checkout PR branch: %s", e.message);
                 await GitHubPullRequestCommentUpdater(
+                    ctx,
                     comment,
                     credential,
                     `Pull request rebase failed because branch **${pr.branchName}** couldn't be checked out`);
                 return {
                     code: 1,
-                    reason: `Pull request ${pr.repo.owner}/${pr.repo.name}#${pr.number} rebase failed because branch ${pr.branchName} couldn't be checked out`,
+                    reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because branch ${pr.branchName} couldn't be checked out`,
                 };
             }
             try {
                 const args = [];
-                if (!!ctx.configuration?.parameters?.strategy) {
-                    args.push("-X", ctx.configuration.parameters.strategy);
+                if (!!ctx.configuration[0]?.parameters?.strategy) {
+                    args.push("-X", ctx.configuration[0].parameters.strategy);
                 }
                 await project.exec("git", ["rebase", ...args, `origin/${pr.baseBranchName}`]);
             } catch (e) {
-                console.warn("Failed to rebase PR branch: %s", e.message);
+                warn("Failed to rebase PR branch: %s", e.message);
 
                 const result = await project.exec("git", ["diff", "--name-only", "--diff-filter=U"]);
                 const conflicts = result.stdout.trim().split("\n");
 
                 await GitHubPullRequestCommentUpdater(
+                    ctx,
                     comment,
                     credential,
                     `Pull request rebase to ${push.after.sha.slice(0, 7)} by @${
@@ -124,38 +132,41 @@ ${commits}`);
 ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
                 return {
                     code: 1,
-                    reason: `Pull request ${pr.repo.owner}/${pr.repo.name}#${pr.number} rebase failed because of conflicts`,
+                    reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because of conflicts`,
                 };
             }
 
             try {
                 await project.exec("git", ["push", "origin", pr.branchName, "--force"]);
             } catch (e) {
-                console.warn("Failed to force push PR branch: %s", e.message);
+                warn("Failed to force push PR branch: %s", e.message);
 
                 await GitHubPullRequestCommentUpdater(
+                    ctx,
                     comment,
                     credential,
                     `Pull request rebase failed because force push to **${pr.branchName}** errored`);
                 return {
                     code: 1,
-                    reason: `Pull request ${pr.repo.owner}/${pr.repo.name}#${pr.number} rebase failed because force push errored`,
+                    reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because force push errored`,
                 };
             }
 
             await GitHubPullRequestCommentUpdater(
+                ctx,
                 comment,
                 credential,
                 `Pull request was successfully rebased onto ${push.after.sha.slice(0, 7)} by @${push.after.author.login}`);
             return {
                 code: 0,
-                reason: `Pull request ${pr.repo.owner}/${pr.repo.name}#${pr.number} was successfully rebased onto ${push.after.sha.slice(0, 7)} by @${push.after.author.login}`,
+                reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) was successfully rebased onto ${push.after.sha.slice(0, 7)} by @${push.after.author.login}`,
             };
 
         }
     }
 
     return {
+        visibility: "hidden",
         code: 0,
         reason: `No open pull request that needs rebasing against branch ${push.branch}`,
     };
@@ -169,14 +180,14 @@ export interface GitHubCommentDetails {
     id: number;
 }
 
-export const GitHubPullRequestCommentCreator: PullRequestCommentCreator<GitHubCommentDetails> = async (pr, credentials, body) => {
+export const GitHubPullRequestCommentCreator: PullRequestCommentCreator<GitHubCommentDetails> = async (ctx, pr, credentials, body) => {
     const result = (await gitHub(credentials.token, pr.repo.org.provider.apiUrl).issues.createComment({
         owner: pr.repo.owner,
         repo: pr.repo.name,
         issue_number: pr.number,
         body,
     })).data;
-
+    await ctx.audit.log(body);
     return {
         apiUrl: pr.repo.org.provider.apiUrl,
         owner: pr.repo.owner,
@@ -186,11 +197,12 @@ export const GitHubPullRequestCommentCreator: PullRequestCommentCreator<GitHubCo
     };
 };
 
-export const GitHubPullRequestCommentUpdater: PullRequestCommentUpdater<GitHubCommentDetails> = async (comment, credentials, body) => {
+export const GitHubPullRequestCommentUpdater: PullRequestCommentUpdater<GitHubCommentDetails> = async (ctx, comment, credentials, body) => {
     await gitHub(credentials.token, comment.apiUrl).issues.updateComment({
         owner: comment.owner,
         repo: comment.repo,
         comment_id: comment.id,
         body,
     });
+    await ctx.audit.log(body);
 };

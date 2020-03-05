@@ -4,6 +4,7 @@ subscription ConvergePullRequestAutoRebaseLabels {
         number
         action
         repo {
+            url
             owner
             name
             org {

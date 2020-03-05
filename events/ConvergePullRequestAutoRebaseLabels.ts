@@ -16,7 +16,6 @@
 
 import { EventHandler } from "@atomist/skill/lib/handler";
 import { gitHubAppToken } from "@atomist/skill/lib/secrets";
-import * as Octokit from "@octokit/rest";
 import {
     apiUrl,
     gitHub,
@@ -32,11 +31,12 @@ export const handler: EventHandler<ConvergePullRequestAutoRebaseLabelsSubscripti
     const pr = ctx.data.PullRequest[0];
 
     if (pr.action !== PullRequestAction.Opened) {
-        await ctx.audit.log(`Pull request ${pr.repo.owner}/${pr.repo.name}#${pr.number} not opened. Ignoring...`);
+        await ctx.audit.log(`Pull request ${pr.repo.owner}/${pr.repo.name}#${pr.number} action not opened. Ignoring...`);
 
         return {
+            visibility: "hidden",
             code: 0,
-            reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) not opened. Ignoring...`,
+            reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) action not opened. Ignoring...`,
         };
     }
 
@@ -46,33 +46,29 @@ export const handler: EventHandler<ConvergePullRequestAutoRebaseLabelsSubscripti
 
     const api = gitHub(credentials.token, apiUrl(repo));
 
-    await ctx.audit.log(`Converging auto-rebase label`);
-
-    await addLabel(AutoRebaseOnPushLabel, "0E8A16", owner, name, api);
-
-    return {
-        code: 0,
-        reason: `Converged auto-rebase label for repository ${repo.owner}/${repo.name}`,
-    };
-};
-
-async function addLabel(name: string,
-                        color: string,
-                        owner: string,
-                        repo: string,
-                        api: Octokit): Promise<void> {
     try {
         await api.issues.getLabel({
-            name,
-            repo,
+            name: AutoRebaseOnPushLabel,
+            repo: name,
             owner,
         });
+        return {
+            visibility: "hidden",
+            code: 0,
+            reason: `Auto-rebase label for [${repo.owner}/${repo.name}](${repo.url}) already exists`,
+        };
     } catch (err) {
+        await ctx.audit.log(`Converging auto-rebase label '${AutoRebaseOnPushLabel}'`);
         await api.issues.createLabel({
             owner,
-            repo,
-            name,
-            color,
+            repo: name,
+            name: AutoRebaseOnPushLabel,
+            color: "0E8A16",
         });
+        await ctx.audit.log(`Converged auto-rebase label 'AutoRebaseOnPushLabel'`);
+        return {
+            code: 0,
+            reason: `Converged auto-rebase label for [${repo.owner}/${repo.name}](${repo.url})`,
+        };
     }
-}
+};
