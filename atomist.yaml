@@ -21,12 +21,17 @@ skill:
   author: Atomist
   description: |
     Automatically rebase a pull request branch if there are pushes to the base branch
+  documentation: |-
+    Automatically rebase a pull request branch if there are pushes to the base branch. 
+    Keep pull request branches current with the base branch to identify merge issues and 
+    avoid a surprise when you go to merge. You don't have to think about your pull request 
+    branches any more — this skill keeps them in harmony with the base branch.
   category:
     - code_review
     - dev_ex
   license: Apache-2.0
-  homepage: https://github.com/atomist-skills/github-rebase-skill
-  repository: https://github.com/atomist-skills/github-rebase-skill.git
+  homepage: https://github.com/atomist-skills/github-auto-rebase-skill
+  repository: https://github.com/atomist-skills/github-auto-rebase-skill.git
   icon: data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTYwIiB2aWV3Qm94PSIwIDAgMTIgMTYiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTEwIDdjLS43MyAwLTEuMzguNDEtMS43MyAxLjAyVjhDNy4yMiA3Ljk4IDYgNy42NCA1LjE0IDYuOThjLS43NS0uNTgtMS41LTEuNjEtMS44OS0yLjQ0QTEuOTkzIDEuOTkzIDAgMCAwIDIgLjk5Qy44OS45OSAwIDEuODkgMCAzYTIgMiAwIDAgMCAxIDEuNzJ2Ni41NmMtLjU5LjM1LTEgLjk5LTEgMS43MiAwIDEuMTEuODkgMiAyIDJhMS45OTMgMS45OTMgMCAwIDAgMS0zLjcyVjcuNjdjLjY3LjcgMS40NCAxLjI3IDIuMyAxLjY5Ljg2LjQyIDIuMDMuNjMgMi45Ny42NHYtLjAyYy4zNi42MSAxIDEuMDIgMS43MyAxLjAyIDEuMTEgMCAyLS44OSAyLTIgMC0xLjExLS44OS0yLTItMnptLTYuOCA2YzAgLjY2LS41NSAxLjItMS4yIDEuMi0uNjUgMC0xLjItLjU1LTEuMi0xLjIgMC0uNjUuNTUtMS4yIDEuMi0xLjIuNjUgMCAxLjIuNTUgMS4yIDEuMnpNMiA0LjJDMS4zNCA0LjIuOCAzLjY1LjggM2MwLS42NS41NS0xLjIgMS4yLTEuMi42NSAwIDEuMi41NSAxLjIgMS4yIDAgLjY1LS41NSAxLjItMS4yIDEuMnptOCA2Yy0uNjYgMC0xLjItLjU1LTEuMi0xLjIgMC0uNjUuNTUtMS4yIDEuMi0xLjIuNjUgMCAxLjIuNTUgMS4yIDEuMiAwIC42NS0uNTUgMS4yLTEuMiAxLjJ6Ii8+PC9zdmc+
 
   package:
@@ -43,9 +48,9 @@ skill:
 parameters:
   - single_choice:
       name: strategy
-      display_name: Default Merge Strategy
+      display_name: Default merge strategy
       description: |-
-        Git merge strategy used when rebasing pull request branches
+        Select which merge strategy to use when rebasing pull request branches
       options:
         - text: Ours
           value: ours
