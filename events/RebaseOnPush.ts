@@ -26,6 +26,7 @@ import {
     GitHubCredential,
 } from "@atomist/skill/lib/secrets";
 import { codeLine } from "@atomist/slack-messages";
+import * as _ from "lodash";
 import { AutoRebaseOnPushLabel } from "./ConvergePullRequestAutoRebaseLabels";
 import { gitHub } from "./github";
 import {
@@ -53,6 +54,8 @@ export const handler: EventHandler<RebaseOnPushSubscription, RebaseConfiguration
         repo: push.repo.name,
         branch: push.branch,
     });
+
+    const results = [];
 
     if (!!prs?.PullRequest && prs.PullRequest.length > 0) {
 
@@ -91,10 +94,11 @@ ${commits}`);
                     comment,
                     credential,
                     `Pull request rebase failed because branch **${pr.branchName}** couldn't be checked out`);
-                return {
+                results.push({
                     code: 1,
                     reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because branch ${pr.branchName} couldn't be checked out`,
-                };
+                });
+                continue;
             }
             try {
                 const args = [];
@@ -115,10 +119,11 @@ ${commits}`);
                     `Pull request rebase to ${push.after.sha.slice(0, 7)} by @${
                         push.after.author.login} failed because of following conflicting ${conflicts.length === 1 ? "file" : "files"}:
 ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
-                return {
+                results.push({
                     code: 1,
                     reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because of conflicts`,
-                };
+                });
+                continue;
             }
 
             try {
@@ -131,10 +136,11 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
                     comment,
                     credential,
                     `Pull request rebase failed because force push to **${pr.branchName}** errored`);
-                return {
+                results.push({
                     code: 1,
                     reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because force push errored`,
-                };
+                });
+                continue;
             }
 
             await GitHubPullRequestCommentUpdater(
@@ -142,19 +148,25 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
                 comment,
                 credential,
                 `Pull request was successfully rebased onto ${push.after.sha.slice(0, 7)} by @${push.after.author.login}`);
-            return {
+            results.push({
                 code: 0,
                 reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) was successfully rebased onto [${push.after.sha.slice(0, 7)}](${push.after.url}) by @${push.after.author.login}`,
-            };
-
+            });
         }
     }
 
-    return {
-        visibility: "hidden",
-        code: 0,
-        reason: `No open pull request that needs rebasing against branch ${push.branch}`,
-    };
+    if (results.length > 0) {
+        return {
+            code: _.max(results.map(r => r.code)),
+            reason: results.map(r => r.reason).join("\n"),
+        };
+    } else {
+        return {
+            visibility: "hidden",
+            code: 0,
+            reason: `No open pull request that needs rebasing against branch ${push.branch}`,
+        };
+    }
 };
 
 function isRebaseRequested(pr: PullRequest,
