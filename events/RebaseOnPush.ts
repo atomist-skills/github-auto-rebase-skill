@@ -26,10 +26,13 @@ import {
     GitHubCredential,
 } from "@atomist/skill/lib/secrets";
 import { codeLine } from "@atomist/slack-messages";
+import { AutoRebaseOnPushLabel } from "./ConvergePullRequestAutoRebaseLabels";
 import { gitHub } from "./github";
 import {
     PullRequest,
     PullRequestByRepoAndBranchQuery,
+    PullRequestByRepoAndBranchQueryVariables,
+    Push,
     RebaseOnPushSubscription,
 } from "./types";
 import { truncateCommitMessage } from "./util";
@@ -41,34 +44,11 @@ interface RebaseConfiguration {
     strategy?: "ours" | "theirs";
 }
 
-const PullRequestByRepoAndBranchQuery = `query PullRequestByRepoAndBranch($owner: String!, $repo: String!, $branch: String!) {
-    PullRequest(state: "open", baseBranchName: $branch) {
-        url
-        number
-        repo(owner: $owner, name: $repo) @required {
-            owner
-            name
-            org {
-                provider {
-                    providerId
-                    apiUrl
-                }
-            }
-        }
-        branchName
-        baseBranchName @required
-        labels(name: "auto-rebase:on-push") @required {
-            name
-        }
-    }
-}
-`;
-
 export const handler: EventHandler<RebaseOnPushSubscription, RebaseConfiguration> = async ctx => {
     const push = ctx.data.Push[0];
 
     // Check if there is an open PR against the branch this push is on
-    const prs = await ctx.graphql.query<PullRequestByRepoAndBranchQuery>(PullRequestByRepoAndBranchQuery, {
+    const prs = await ctx.graphql.query<PullRequestByRepoAndBranchQuery, PullRequestByRepoAndBranchQueryVariables>("pullRequestByRepoAndBranch.graphql", {
         owner: push.repo.owner,
         repo: push.repo.name,
         branch: push.branch,
@@ -79,6 +59,11 @@ export const handler: EventHandler<RebaseOnPushSubscription, RebaseConfiguration
         const commits = push.commits.map(c => `- ${c.sha.slice(0, 7)} _${truncateCommitMessage(c.message, push.repo)}_`).join("\n");
 
         for (const pr of prs.PullRequest) {
+
+            if (!isRebaseRequested(pr, push)) {
+                continue;
+            }
+
             const { repo } = pr;
             const credential = await ctx.credential.resolve(gitHubAppToken({ owner: repo.owner, repo: repo.name, apiUrl: repo.org.provider.apiUrl }));
 
@@ -171,6 +156,42 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
         reason: `No open pull request that needs rebasing against branch ${push.branch}`,
     };
 };
+
+function isRebaseRequested(pr: PullRequest,
+                           push: Push,
+                           label: string = AutoRebaseOnPushLabel,
+                           tag: string = `[${AutoRebaseOnPushLabel}]`): boolean {
+    // 0. check labels
+    if (pr?.labels?.some(l => l.name === label)) {
+        return true;
+    }
+
+    // 1. check body and title for auto rebase marker
+    if (isTagged(pr?.title, tag) || isTagged(pr?.body, tag)) {
+        return true;
+    }
+
+    // 2. PR comment that contains the rebase marker
+    if (pr?.comments?.some(c => isTagged(c.body, tag))) {
+        return true;
+    }
+
+    // 3. Commit message containing the auto rebase marker
+    if (pr?.commits?.some(c => isTagged(c.message, tag))) {
+        return true;
+    }
+
+    // 4. Commit push message containing the auto rebase marker
+    if (push?.commits?.some(c => isTagged(c.message, tag))) {
+        return true;
+    }
+
+    return false;
+}
+
+function isTagged(msg: string, tag: string): boolean {
+    return msg && msg.indexOf(tag) >= 0;
+}
 
 export interface GitHubCommentDetails {
     apiUrl: string;

@@ -2,6 +2,13 @@ query pullRequestByRepoAndBranch($owner: String!, $repo: String!, $branch: Strin
     PullRequest(state: "open", baseBranchName: $branch) {
         url
         number
+        comments{
+            body
+        }
+        commits {
+            sha
+            message
+        }
         repo(owner: $owner, name: $repo) @required {
             owner
             name
@@ -13,8 +20,8 @@ query pullRequestByRepoAndBranch($owner: String!, $repo: String!, $branch: Strin
             }
         }
         branchName
-        baseBranchName @required
-        labels(name: "auto-rebase:on-push") @required {
+        baseBranchName
+        labels {
             name
         }
     }
