@@ -21,7 +21,7 @@ The label is automatically added to the repository when this skill is enabled.
 
 By default, this skill will be enabled for all repositories in all 
 organizations you have connected. To restrict the organizations or specific
-repositories on which the skill will run, you can explicitly choose 
+repositories on which the skill will run, you can explicitly choose  
 organization(s) and repositories.
 
 <!---atomist-skill-readme:end--->
