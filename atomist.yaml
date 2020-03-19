@@ -17,7 +17,7 @@
 skill:
   name: atomist/github-auto-rebase-skill
   title: Auto-rebase pull request
-  version: 2.0.5
+  version: 2.0.6
   author: Atomist
   description: |
     Automatically rebase a pull request branch if there are pushes to the base branch
@@ -42,6 +42,7 @@ skill:
     memory: 1024
     name: nodejs10
     entry_point: entryPoint
+    timeout: 60
 
 parameters:
   - single_choice:
@@ -60,3 +61,45 @@ parameters:
       display_name: Repositories
       description: ''
       required: false
+subscriptions:
+  - |
+    subscription ConvergePullRequestAutoRebaseLabels {
+        PullRequest {
+            url
+            number
+            action
+            repo {
+                url
+                owner
+                name
+                org {
+                    provider {
+                        apiUrl
+                    }
+                }
+            }
+        }
+    }
+  - |
+    subscription RebaseOnPush {
+        Push {
+            after {
+                url
+                sha
+                author {
+                    login
+                }
+            }
+            commits {
+                sha
+                message
+            }
+            repo {
+                owner
+                name
+            }
+            branch
+        }
+    }
+ingesters: []
+commands: []
