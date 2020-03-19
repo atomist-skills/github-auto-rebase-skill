@@ -36,10 +36,7 @@ skill:
   video: https://images.atomist.com/skills/github-auto-rebase.gif
   
   package:
-    - use: atomist/package-sdm-skill/package
-      parameters:
-        main: node_modules/@atomist/skill/lib/function.js
-        dependencies: keep
+    use: atomist/package-npm-skill
 
   runtime:
     memory: 1024
