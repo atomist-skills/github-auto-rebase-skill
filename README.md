@@ -4,6 +4,8 @@ Automatically rebase pull request branches when pushes to the base branch occur.
 
 <!---atomist-skill-readme:start--->
 
+[Code](https://github.com/atomist-skills/github-auto-rebase-skill) - [Issues](https://github.com/atomist-skills/github-auto-rebase-skill/issues)
+
 # What it's useful for
 
 With this skill you can automatically rebase pull request branches when pushes to base branch happen. 
