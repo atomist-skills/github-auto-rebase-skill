@@ -38,8 +38,14 @@ import {
 } from "./types";
 import { truncateCommitMessage } from "./util";
 
-type PullRequestCommentCreator<T> = (ctx: EventContext, pr: PullRequest, credential: GitHubAppCredential | GitHubCredential, body: string) => Promise<T>;
-type PullRequestCommentUpdater<T> = (ctx: EventContext, comment: T, credential: GitHubAppCredential | GitHubCredential, body: string) => Promise<void>;
+type PullRequestCommentCreator<T> = (ctx: EventContext,
+                                     pr: PullRequest,
+                                     credential: GitHubAppCredential | GitHubCredential,
+                                     body: string) => Promise<T>;
+type PullRequestCommentUpdater<T> = (ctx: EventContext,
+                                     comment: T,
+                                     credential: GitHubAppCredential | GitHubCredential,
+                                     body: string) => Promise<void>;
 
 interface RebaseConfiguration {
     strategy?: "ours" | "theirs";
@@ -49,17 +55,19 @@ export const handler: EventHandler<RebaseOnPushSubscription, RebaseConfiguration
     const push = ctx.data.Push[0];
 
     // Check if there is an open PR against the branch this push is on
-    const prs = await ctx.graphql.query<PullRequestByRepoAndBranchQuery, PullRequestByRepoAndBranchQueryVariables>("pullRequestByRepoAndBranch.graphql", {
-        owner: push.repo.owner,
-        repo: push.repo.name,
-        branch: push.branch,
-    });
+    const prs = await ctx.graphql.query<PullRequestByRepoAndBranchQuery, PullRequestByRepoAndBranchQueryVariables>(
+        "pullRequestByRepoAndBranch.graphql",
+        {
+            owner: push.repo.owner,
+            repo: push.repo.name,
+            branch: push.branch,
+        });
 
     const results = [];
 
     if (!!prs?.PullRequest && prs.PullRequest.length > 0) {
 
-        const commits = push.commits.map(c => `- ${c.sha.slice(0, 7)} _${truncateCommitMessage(c.message, push.repo)}_`).join("\n");
+        const commits = push.commits.map(c => `- ${c.sha.slice(0, 7)} _${truncateCommitMessage(c.message)}_`).join("\n");
 
         for (const pr of prs.PullRequest) {
 
@@ -102,7 +110,7 @@ ${commits}`);
             }
             try {
                 const args = [];
-                if (!!ctx.configuration[0]?.parameters?.strategy) {
+                if (ctx.configuration[0]?.parameters?.strategy) {
                     args.push("-X", ctx.configuration[0].parameters.strategy);
                 }
                 await project.exec("git", ["rebase", ...args, `origin/${pr.baseBranchName}`]);
@@ -172,7 +180,7 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
 function isRebaseRequested(pr: PullRequest,
                            push: Push,
                            label: string = AutoRebaseOnPushLabel,
-                           tag: string = `[${AutoRebaseOnPushLabel}]`): boolean {
+                           tag = `[${AutoRebaseOnPushLabel}]`): boolean {
     // 0. check labels
     if (pr?.labels?.some(l => l.name === label)) {
         return true;
@@ -213,29 +221,31 @@ export interface GitHubCommentDetails {
     id: number;
 }
 
-export const GitHubPullRequestCommentCreator: PullRequestCommentCreator<GitHubCommentDetails> = async (ctx, pr, credentials, body) => {
-    const result = (await gitHub(credentials.token, pr.repo.org.provider.apiUrl).issues.createComment({
-        owner: pr.repo.owner,
-        repo: pr.repo.name,
-        issue_number: pr.number,
-        body,
-    })).data;
-    await ctx.audit.log(body);
-    return {
-        apiUrl: pr.repo.org.provider.apiUrl,
-        owner: pr.repo.owner,
-        repo: pr.repo.name,
-        number: pr.number,
-        id: result.id,
+export const GitHubPullRequestCommentCreator: PullRequestCommentCreator<GitHubCommentDetails> =
+    async (ctx, pr, credentials, body) => {
+        const result = (await gitHub(credentials.token, pr.repo.org.provider.apiUrl).issues.createComment({
+            owner: pr.repo.owner,
+            repo: pr.repo.name,
+            issue_number: pr.number,  // eslint-disable-line @typescript-eslint/camelcase
+            body,
+        })).data;
+        await ctx.audit.log(body);
+        return {
+            apiUrl: pr.repo.org.provider.apiUrl,
+            owner: pr.repo.owner,
+            repo: pr.repo.name,
+            number: pr.number,
+            id: result.id,
+        };
     };
-};
 
-export const GitHubPullRequestCommentUpdater: PullRequestCommentUpdater<GitHubCommentDetails> = async (ctx, comment, credentials, body) => {
-    await gitHub(credentials.token, comment.apiUrl).issues.updateComment({
-        owner: comment.owner,
-        repo: comment.repo,
-        comment_id: comment.id,
-        body,
-    });
-    await ctx.audit.log(body);
-};
+export const GitHubPullRequestCommentUpdater: PullRequestCommentUpdater<GitHubCommentDetails> =
+    async (ctx, comment, credentials, body) => {
+        await gitHub(credentials.token, comment.apiUrl).issues.updateComment({
+            owner: comment.owner,
+            repo: comment.repo,
+            comment_id: comment.id, // eslint-disable-line @typescript-eslint/camelcase
+            body,
+        });
+        await ctx.audit.log(body);
+    };
