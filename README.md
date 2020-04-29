@@ -4,8 +4,6 @@ Automatically rebase pull request branches when pushes to the base branch occur.
 
 <!---atomist-skill-readme:start--->
 
-[Code](https://github.com/atomist-skills/github-auto-rebase-skill) - [Issues](https://github.com/atomist-skills/github-auto-rebase-skill/issues)
-
 # What it's useful for
 
 With this skill you can automatically rebase pull request branches when pushes to base branch happen. 
@@ -23,12 +21,14 @@ Connect and configure these integrations:
 1. **GitHub**
 2. **Slack**
 
-**GitHub** must be configured to use this skill. At least one repository must be selected. We recommend connecting the
+The **GitHub** integration must be configured in order to use this skill. At least one repository must be selected. We recommend connecting the
 **Slack** integration.
 
 # How to configure
 
-1. **Select the default auto merge strategy**
+1. **Select the merge strategy**
+    
+    The selected merge strategy will be used for the rebase.
     
     ![Default merge-strategy](docs/images/default-merge-strategy.png)
     
@@ -51,13 +51,15 @@ Connect and configure these integrations:
 
 # How to use Pull Request auto-rebase
 
-1. **Configure skill, set default auto-rebase strategy** 
+1. **Configure the skill, set default auto-rebase strategy** 
 
     ![Configuration](docs/images/configuration.png)
 
 2. **For every new pull request raised, manually add the `auto-rebase:on-push` label to enable auto-rebase**
 
 3. **Enjoy not having to manually rebase your pull request!**
+
+To create feature requests or bug reports, create an [issue in the repository for this skill](https://github.com/atomist-skills/github-auto-rebase-skill/issues). See the [code](https://github.com/atomist-skills/github-auto-rebase-skill) for the skill.
 
 <!---atomist-skill-readme:end--->
 
