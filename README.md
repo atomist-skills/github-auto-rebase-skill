@@ -53,8 +53,6 @@ The **GitHub** integration must be configured in order to use this skill. At lea
 
 1. **Configure the skill, set default auto-rebase strategy** 
 
-    ![Configuration](docs/images/configuration.png)
-
 2. **For every new pull request raised, manually add the `auto-rebase:on-push` label to enable auto-rebase**
 
 3. **Enjoy not having to manually rebase your pull request!**
