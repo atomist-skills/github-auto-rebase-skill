@@ -21,8 +21,8 @@ Connect and configure these integrations:
 1. **GitHub**
 2. **Slack**
 
-The **GitHub** integration must be configured in order to use this skill. At least one repository must be selected. We recommend connecting the
-**Slack** integration.
+The **GitHub** integration must be configured in order to use this skill. At least one repository must be selected. 
+We recommend connecting the **Slack** integration.
 
 # How to configure
 
