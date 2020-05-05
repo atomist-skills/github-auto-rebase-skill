@@ -1,7 +1,7 @@
 {
   "main": "dist/index.js",
   "dependencies": {
-    "@atomist/skill": "0.1.0-master.20200505084751",
+    "@atomist/skill": "0.1.0-master.20200501091905",
     "@atomist/slack-messages": "^1.1.1",
     "@octokit/rest": "16.37.0",
     "lodash": "^4.17.15"
