@@ -1,5 +1,5 @@
 {
-  "main": "dist/index.js",
+  "main": "node_modules/@atomist/skill/lib/function.js",
   "dependencies": {
     "@atomist/skill": "0.1.0-master.20200505084751",
     "@atomist/slack-messages": "^1.1.1",
