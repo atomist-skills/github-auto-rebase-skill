@@ -12,7 +12,10 @@ For example, if open pull request branch `v2` has base branch `master`, and some
 `v2` will be rebased with the new commit(s) to `master`.
 
 This approach makes it easy for pull request authors (or anyone with permissions in the repository) to flag a pull 
-request for auto-rebase, simply by adding the `auto-rebase:on-push` label. 
+request for auto-rebase, simply by adding the `auto-rebase:on-push` label.
+
+Alternatively you can request a rebase of pull request at any time by commenting with `/rebase` in a pull request
+comment.  
 
 # Before you get started
 
@@ -55,7 +58,9 @@ We recommend connecting the **Slack** integration.
 
 2. **For every new pull request raised, manually add the `auto-rebase:on-push` label to enable auto-rebase**
 
-3. **Enjoy not having to manually rebase your pull request!**
+3. **Alternatively you can comment with `/rebase` to request an ad-hoc rebase of a pull request** 
+
+4. **Enjoy not having to manually rebase your pull request!**
 
 To create feature requests or bug reports, create an [issue in the repository for this skill](https://github.com/atomist-skills/github-auto-rebase-skill/issues). See the [code](https://github.com/atomist-skills/github-auto-rebase-skill) for the skill.
 
