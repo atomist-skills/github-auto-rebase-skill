@@ -37,7 +37,7 @@ export const handler: EventHandler<RebaseOnPullRequestCommentSubscription, Rebas
         ctx,
         pr,
         credential,
-        `Pull request rebase is in progress.`);
+        `Pull request rebase is in progress`);
 
     const project = await ctx.project.clone(gitHubComRepository({
         owner: repo.owner,
@@ -85,7 +85,7 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
     }
 
     try {
-        await project.exec("git", ["push", "origin", pr.branchName, " --force-with-lease"]);
+        await project.exec("git", ["push", "origin", pr.branchName, "--force-with-lease"]);
     } catch (e) {
         warn("Failed to force push PR branch: %s", e.message);
 

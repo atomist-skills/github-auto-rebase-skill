@@ -120,7 +120,7 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
             }
 
             try {
-                await project.exec("git", ["push", "origin", pr.branchName, " --force-with-lease"]);
+                await project.exec("git", ["push", "origin", pr.branchName, "--force-with-lease"]);
             } catch (e) {
                 warn("Failed to force push PR branch: %s", e.message);
 
