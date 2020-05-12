@@ -1,6 +1,6 @@
 subscription RebaseOnPullRequestComment {
     Comment {
-        body @matches(re: "^.*/rebase.*$")
+        body @matches(re: "^\\s*/rebase\\s*$")
         pullRequest(state: "open") @required {
             url
             baseBranchName
