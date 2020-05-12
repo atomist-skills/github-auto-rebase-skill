@@ -15,15 +15,13 @@
  */
 
 import { EventHandler } from "@atomist/skill/lib/handler";
+import { gitHubComRepository } from "@atomist/skill/lib/project";
+import { gitHub } from "@atomist/skill/lib/project/github";
 import { gitHubAppToken } from "@atomist/skill/lib/secrets";
-import {
-    apiUrl,
-    gitHub,
-} from "./github";
 import {
     ConvergePullRequestAutoRebaseLabelsSubscription,
     PullRequestAction,
-} from "./types";
+} from "../typings/types";
 
 export const AutoRebaseOnPushLabel = "auto-rebase:on-push";
 
@@ -42,9 +40,8 @@ export const handler: EventHandler<ConvergePullRequestAutoRebaseLabelsSubscripti
 
     const repo = ctx.data.PullRequest[0].repo;
     const { owner, name } = repo;
-    const credentials = await ctx.credential.resolve(gitHubAppToken({ owner, repo: name }));
-
-    const api = gitHub(credentials.token, apiUrl(repo));
+    const credential = await ctx.credential.resolve(gitHubAppToken({ owner, repo: name }));
+    const api = gitHub(gitHubComRepository({ owner, repo: name, credential }));
 
     try {
         await api.issues.getLabel({

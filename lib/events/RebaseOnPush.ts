@@ -14,42 +14,27 @@
  * limitations under the License.
  */
 
-import {
-    EventContext,
-    EventHandler,
-} from "@atomist/skill/lib/handler";
+import { EventHandler } from "@atomist/skill/lib/handler";
 import { warn } from "@atomist/skill/lib/log";
 import { gitHubComRepository } from "@atomist/skill/lib/project";
-import {
-    GitHubAppCredential,
-    gitHubAppToken,
-    GitHubCredential,
-} from "@atomist/skill/lib/secrets";
+import { checkout } from "@atomist/skill/lib/project/git";
+import { gitHubAppToken } from "@atomist/skill/lib/secrets";
 import { codeLine } from "@atomist/slack-messages";
 import * as _ from "lodash";
-import { AutoRebaseOnPushLabel } from "./ConvergePullRequestAutoRebaseLabels";
-import { gitHub } from "./github";
+import {
+    GitHubPullRequestCommentCreator,
+    GitHubPullRequestCommentUpdater,
+} from "../comment";
+import { RebaseConfiguration } from "../configuration";
 import {
     PullRequest,
     PullRequestByRepoAndBranchQuery,
     PullRequestByRepoAndBranchQueryVariables,
     Push,
     RebaseOnPushSubscription,
-} from "./types";
-import { truncateCommitMessage } from "./util";
-
-type PullRequestCommentCreator<T> = (ctx: EventContext,
-                                     pr: PullRequest,
-                                     credential: GitHubAppCredential | GitHubCredential,
-                                     body: string) => Promise<T>;
-type PullRequestCommentUpdater<T> = (ctx: EventContext,
-                                     comment: T,
-                                     credential: GitHubAppCredential | GitHubCredential,
-                                     body: string) => Promise<void>;
-
-interface RebaseConfiguration {
-    strategy?: "ours" | "theirs";
-}
+} from "../typings/types";
+import { truncateCommitMessage } from "../util";
+import { AutoRebaseOnPushLabel } from "./ConvergePullRequestAutoRebaseLabels";
 
 export const handler: EventHandler<RebaseOnPushSubscription, RebaseConfiguration> = async ctx => {
     const push = ctx.data.Push[0];
@@ -94,7 +79,7 @@ ${commits}`);
             }), { alwaysDeep: true, detachHead: false });
 
             try {
-                await project.exec("git", ["checkout", pr.branchName]);
+                await checkout(project, pr.branchName);
             } catch (e) {
                 warn("Failed to checkout PR branch: %s", e.message);
                 await GitHubPullRequestCommentUpdater(
@@ -135,7 +120,7 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
             }
 
             try {
-                await project.exec("git", ["push", "origin", pr.branchName, "--force"]);
+                await project.exec("git", ["push", "origin", pr.branchName, " --force-with-lease"]);
             } catch (e) {
                 warn("Failed to force push PR branch: %s", e.message);
 
@@ -213,39 +198,3 @@ function isTagged(msg: string, tag: string): boolean {
     return msg && msg.indexOf(tag) >= 0;
 }
 
-export interface GitHubCommentDetails {
-    apiUrl: string;
-    owner: string;
-    repo: string;
-    number: number;
-    id: number;
-}
-
-export const GitHubPullRequestCommentCreator: PullRequestCommentCreator<GitHubCommentDetails> =
-    async (ctx, pr, credentials, body) => {
-        const result = (await gitHub(credentials.token, pr.repo.org.provider.apiUrl).issues.createComment({
-            owner: pr.repo.owner,
-            repo: pr.repo.name,
-            issue_number: pr.number,  // eslint-disable-line @typescript-eslint/camelcase
-            body,
-        })).data;
-        await ctx.audit.log(body);
-        return {
-            apiUrl: pr.repo.org.provider.apiUrl,
-            owner: pr.repo.owner,
-            repo: pr.repo.name,
-            number: pr.number,
-            id: result.id,
-        };
-    };
-
-export const GitHubPullRequestCommentUpdater: PullRequestCommentUpdater<GitHubCommentDetails> =
-    async (ctx, comment, credentials, body) => {
-        await gitHub(credentials.token, comment.apiUrl).issues.updateComment({
-            owner: comment.owner,
-            repo: comment.repo,
-            comment_id: comment.id, // eslint-disable-line @typescript-eslint/camelcase
-            body,
-        });
-        await ctx.audit.log(body);
-    };
