@@ -40,7 +40,7 @@ export type PullRequestCommentUpdater<T> = (ctx: EventContext,
                                             credential: GitHubAppCredential | GitHubCredential,
                                             body: string) => Promise<void>;
 
-export const GitHubPullRequestCommentCreator: PullRequestCommentCreator<GitHubCommentDetails> =
+export const gitHubPullRequestCommentCreator: PullRequestCommentCreator<GitHubCommentDetails> =
     async (ctx, pr, credential, body) => {
         const result = (await gitHub(gitHubComRepository({ owner: pr.repo.owner, repo: pr.repo.name, credential })).issues.createComment({
             owner: pr.repo.owner,
@@ -58,7 +58,7 @@ export const GitHubPullRequestCommentCreator: PullRequestCommentCreator<GitHubCo
         };
     };
 
-export const GitHubPullRequestCommentUpdater: PullRequestCommentUpdater<GitHubCommentDetails> =
+export const gitHubPullRequestCommentUpdater: PullRequestCommentUpdater<GitHubCommentDetails> =
     async (ctx, comment, credential, body) => {
         await gitHub(gitHubComRepository({ owner: comment.owner, repo: comment.repo, credential })).issues.updateComment({
             owner: comment.owner,

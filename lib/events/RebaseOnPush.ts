@@ -22,8 +22,8 @@ import { gitHubAppToken } from "@atomist/skill/lib/secrets";
 import { codeLine } from "@atomist/slack-messages";
 import * as _ from "lodash";
 import {
-    GitHubPullRequestCommentCreator,
-    GitHubPullRequestCommentUpdater,
+    gitHubPullRequestCommentCreator,
+    gitHubPullRequestCommentUpdater,
 } from "../comment";
 import { RebaseConfiguration } from "../configuration";
 import {
@@ -63,7 +63,7 @@ export const handler: EventHandler<RebaseOnPushSubscription, RebaseConfiguration
             const { repo } = pr;
             const credential = await ctx.credential.resolve(gitHubAppToken({ owner: repo.owner, repo: repo.name, apiUrl: repo.org.provider.apiUrl }));
 
-            const comment = await GitHubPullRequestCommentCreator(
+            const comment = await gitHubPullRequestCommentCreator(
                 ctx,
                 pr,
                 credential,
@@ -82,7 +82,7 @@ ${commits}`);
                 await checkout(project, pr.branchName);
             } catch (e) {
                 warn("Failed to checkout PR branch: %s", e.message);
-                await GitHubPullRequestCommentUpdater(
+                await gitHubPullRequestCommentUpdater(
                     ctx,
                     comment,
                     credential,
@@ -105,7 +105,7 @@ ${commits}`);
                 const result = await project.exec("git", ["diff", "--name-only", "--diff-filter=U"]);
                 const conflicts = result.stdout.trim().split("\n");
 
-                await GitHubPullRequestCommentUpdater(
+                await gitHubPullRequestCommentUpdater(
                     ctx,
                     comment,
                     credential,
@@ -124,7 +124,7 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
             } catch (e) {
                 warn("Failed to force push PR branch: %s", e.message);
 
-                await GitHubPullRequestCommentUpdater(
+                await gitHubPullRequestCommentUpdater(
                     ctx,
                     comment,
                     credential,
@@ -136,7 +136,7 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
                 continue;
             }
 
-            await GitHubPullRequestCommentUpdater(
+            await gitHubPullRequestCommentUpdater(
                 ctx,
                 comment,
                 credential,
