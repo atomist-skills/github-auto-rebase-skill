@@ -56,7 +56,7 @@ export const handler: EventHandler<RebaseOnPullRequestCommentSubscription, Rebas
             credential,
             `Pull request rebase failed because branch **${pr.branchName}** couldn't be checked out`);
         return {
-            code: 1,
+            code: 0,
             reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because branch ${pr.branchName} couldn't be checked out`,
         };
     }
@@ -79,7 +79,7 @@ export const handler: EventHandler<RebaseOnPullRequestCommentSubscription, Rebas
             `Pull request rebase failed because of following conflicting ${conflicts.length === 1 ? "file" : "files"}:
 ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
         return {
-            code: 1,
+            code: 0,
             reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because of conflicts`,
         };
     }
@@ -95,7 +95,7 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
             credential,
             `Pull request rebase failed because force push to **${pr.branchName}** errored`);
         return {
-            code: 1,
+            code: 0,
             reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because force push errored`,
         };
     }

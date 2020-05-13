@@ -88,7 +88,7 @@ ${commits}`);
                     credential,
                     `Pull request rebase failed because branch **${pr.branchName}** couldn't be checked out`);
                 results.push({
-                    code: 1,
+                    code: 0,
                     reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because branch ${pr.branchName} couldn't be checked out`,
                 });
                 continue;
@@ -113,7 +113,7 @@ ${commits}`);
                         push.after.author.login} failed because of following conflicting ${conflicts.length === 1 ? "file" : "files"}:
 ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
                 results.push({
-                    code: 1,
+                    code: 0,
                     reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because of conflicts`,
                 });
                 continue;
@@ -130,7 +130,7 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
                     credential,
                     `Pull request rebase failed because force push to **${pr.branchName}** errored`);
                 results.push({
-                    code: 1,
+                    code: 0,
                     reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because force push errored`,
                 });
                 continue;
