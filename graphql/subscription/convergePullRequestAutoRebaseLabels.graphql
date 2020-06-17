@@ -1,4 +1,4 @@
-subscription ConvergePullRequestAutoRebaseLabels {
+subscription convergePullRequestAutoRebaseLabels {
     PullRequest {
         url
         number

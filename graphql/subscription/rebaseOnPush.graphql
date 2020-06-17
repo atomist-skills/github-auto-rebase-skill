@@ -1,4 +1,4 @@
-subscription RebaseOnPush {
+subscription rebaseOnPush {
     Push {
         after {
             url

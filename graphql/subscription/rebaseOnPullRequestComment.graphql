@@ -1,4 +1,4 @@
-subscription RebaseOnPullRequestComment {
+subscription rebaseOnPullRequestComment {
     Comment {
         body @matches(re: "^\\s*/rebase\\s*$")
         pullRequest(state: "open") @required {
