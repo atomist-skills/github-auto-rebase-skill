@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.1.2...HEAD)
 
+### Changed
+
+-   Converge label description. [7b83981](https://github.com/atomist-skills/github-auto-rebase-skill/commit/7b8398165935ea0326a6b6646c45128d461fc272)
+
 ## [2.1.2](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.1.1...2.1.2) - 2020-05-13
 
 ## [2.1.1](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.1.0...2.1.1) - 2020-05-12
