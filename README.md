@@ -1,6 +1,24 @@
 # `atomist/github-auto-rebase-skill`
 
-Automatically rebase pull request branches when pushes to the base branch occur. 
+<!--<!---atomist-skill-description:start--->
+    
+Automatically rebase a pull request branch if there are pushes to the base branch
+    
+<!---atomist-skill-description:end--->
+
+---
+
+<!---atomist-skill-long_description:start--->
+
+Automatically rebase a pull request branch if there are pushes to the base branch. 
+Keep pull request branches current with the base branch to identify merge issues and 
+avoid a surprise when you go to merge. You don't have to think about your pull request 
+branches any more — this skill keeps them in harmony with the base branch.
+
+<!---atomist-skill-long_description:end--->
+
+
+--- 
 
 <!---atomist-skill-readme:start--->
 

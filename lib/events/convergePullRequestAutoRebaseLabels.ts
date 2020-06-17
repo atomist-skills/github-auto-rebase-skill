@@ -16,12 +16,9 @@
 
 import { EventHandler } from "@atomist/skill/lib/handler";
 import { gitHubComRepository } from "@atomist/skill/lib/project";
-import { gitHub } from "@atomist/skill/lib/project/github";
+import { convergeLabel } from "@atomist/skill/lib/project/github";
 import { gitHubAppToken } from "@atomist/skill/lib/secrets";
-import {
-    ConvergePullRequestAutoRebaseLabelsSubscription,
-    PullRequestAction,
-} from "../typings/types";
+import { ConvergePullRequestAutoRebaseLabelsSubscription, PullRequestAction } from "../typings/types";
 
 export const AutoRebaseOnPushLabel = "auto-rebase:on-push";
 
@@ -29,7 +26,9 @@ export const handler: EventHandler<ConvergePullRequestAutoRebaseLabelsSubscripti
     const pr = ctx.data.PullRequest[0];
 
     if (pr.action !== PullRequestAction.Opened) {
-        await ctx.audit.log(`Pull request ${pr.repo.owner}/${pr.repo.name}#${pr.number} action not opened. Ignoring...`);
+        await ctx.audit.log(
+            `Pull request ${pr.repo.owner}/${pr.repo.name}#${pr.number} action not opened. Ignoring...`,
+        );
 
         return {
             visibility: "hidden",
@@ -41,31 +40,13 @@ export const handler: EventHandler<ConvergePullRequestAutoRebaseLabelsSubscripti
     const repo = ctx.data.PullRequest[0].repo;
     const { owner, name } = repo;
     const credential = await ctx.credential.resolve(gitHubAppToken({ owner, repo: name }));
-    const api = gitHub(gitHubComRepository({ owner, repo: name, credential }));
 
-    try {
-        await api.issues.getLabel({
-            name: AutoRebaseOnPushLabel,
-            repo: name,
-            owner,
-        });
-        return {
-            visibility: "hidden",
-            code: 0,
-            reason: `Auto-rebase label for [${repo.owner}/${repo.name}](${repo.url}) already exists`,
-        };
-    } catch (err) {
-        await ctx.audit.log(`Converging auto-rebase label '${AutoRebaseOnPushLabel}'`);
-        await api.issues.createLabel({
-            owner,
-            repo: name,
-            name: AutoRebaseOnPushLabel,
-            color: "0E8A16",
-        });
-        await ctx.audit.log(`Converged auto-rebase label 'AutoRebaseOnPushLabel'`);
-        return {
-            code: 0,
-            reason: `Converged auto-rebase label for [${repo.owner}/${repo.name}](${repo.url})`,
-        };
-    }
+    const id = gitHubComRepository({ owner, repo: name, credential });
+    await ctx.audit.log(`Converging auto-rebase label '${AutoRebaseOnPushLabel}'`);
+    await convergeLabel(id, AutoRebaseOnPushLabel, "0E8A16", "Auto-rebase pull request branch");
+    await ctx.audit.log(`Converged auto-rebase label 'AutoRebaseOnPushLabel'`);
+    return {
+        code: 0,
+        reason: `Converged auto-rebase label for [${repo.owner}/${repo.name}](${repo.url})`,
+    };
 };

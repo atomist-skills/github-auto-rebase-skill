@@ -21,20 +21,15 @@ import { checkout } from "@atomist/skill/lib/project/git";
 import { gitHubAppToken } from "@atomist/skill/lib/secrets";
 import { codeLine } from "@atomist/slack-messages";
 import * as _ from "lodash";
-import {
-    gitHubPullRequestCommentCreator,
-    gitHubPullRequestCommentUpdater,
-} from "../comment";
+import { gitHubPullRequestCommentCreator, gitHubPullRequestCommentUpdater } from "../comment";
 import { RebaseConfiguration } from "../configuration";
 import {
-    PullRequest,
     PullRequestByRepoAndBranchQuery,
     PullRequestByRepoAndBranchQueryVariables,
-    Push,
     RebaseOnPushSubscription,
 } from "../typings/types";
 import { truncateCommitMessage } from "../util";
-import { AutoRebaseOnPushLabel } from "./ConvergePullRequestAutoRebaseLabels";
+import { AutoRebaseOnPushLabel } from "./convergePullRequestAutoRebaseLabels";
 
 export const handler: EventHandler<RebaseOnPushSubscription, RebaseConfiguration> = async ctx => {
     const push = ctx.data.Push[0];
@@ -46,37 +41,45 @@ export const handler: EventHandler<RebaseOnPushSubscription, RebaseConfiguration
             owner: push.repo.owner,
             repo: push.repo.name,
             branch: push.branch,
-        });
+        },
+    );
 
     const results = [];
 
     if (!!prs?.PullRequest && prs.PullRequest.length > 0) {
-
-        const commits = push.commits.map(c => `- ${c.sha.slice(0, 7)} _${truncateCommitMessage(c.message)}_`).join("\n");
+        const commits = push.commits
+            .map(c => `- ${c.sha.slice(0, 7)} _${truncateCommitMessage(c.message)}_`)
+            .join("\n");
 
         for (const pr of prs.PullRequest) {
-
             if (!isRebaseRequested(pr, push)) {
                 continue;
             }
 
             const { repo } = pr;
-            const credential = await ctx.credential.resolve(gitHubAppToken({ owner: repo.owner, repo: repo.name, apiUrl: repo.org.provider.apiUrl }));
+            const credential = await ctx.credential.resolve(
+                gitHubAppToken({ owner: repo.owner, repo: repo.name, apiUrl: repo.org.provider.apiUrl }),
+            );
 
             const comment = await gitHubPullRequestCommentCreator(
                 ctx,
-                pr,
+                pr as any,
                 credential,
                 `Pull request rebase is in progress because @${push.after.author.login} pushed ${push.commits.length} ${
-                    push.commits.length === 1 ? "commit" : "commits"} to **${push.branch}**:
-${commits}`);
+                    push.commits.length === 1 ? "commit" : "commits"
+                } to **${push.branch}**:
+${commits}`,
+            );
 
-            const project = await ctx.project.clone(gitHubComRepository({
-                owner: repo.owner,
-                repo: repo.name,
-                credential,
-                branch: pr.branchName,
-            }), { alwaysDeep: true, detachHead: false });
+            const project = await ctx.project.clone(
+                gitHubComRepository({
+                    owner: repo.owner,
+                    repo: repo.name,
+                    credential,
+                    branch: pr.branchName,
+                }),
+                { alwaysDeep: true, detachHead: false },
+            );
 
             try {
                 await checkout(project, pr.branchName);
@@ -86,7 +89,8 @@ ${commits}`);
                     ctx,
                     comment,
                     credential,
-                    `Pull request rebase failed because branch **${pr.branchName}** couldn't be checked out`);
+                    `Pull request rebase failed because branch **${pr.branchName}** couldn't be checked out`,
+                );
                 results.push({
                     code: 0,
                     reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because branch ${pr.branchName} couldn't be checked out`,
@@ -110,8 +114,10 @@ ${commits}`);
                     comment,
                     credential,
                     `Pull request rebase to ${push.after.sha.slice(0, 7)} by @${
-                        push.after.author.login} failed because of following conflicting ${conflicts.length === 1 ? "file" : "files"}:
-${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
+                        push.after.author.login
+                    } failed because of following conflicting ${conflicts.length === 1 ? "file" : "files"}:
+${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`,
+                );
                 results.push({
                     code: 0,
                     reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because of conflicts`,
@@ -128,7 +134,8 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
                     ctx,
                     comment,
                     credential,
-                    `Pull request rebase failed because force push to **${pr.branchName}** errored`);
+                    `Pull request rebase failed because force push to **${pr.branchName}** errored`,
+                );
                 results.push({
                     code: 0,
                     reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because force push errored`,
@@ -140,10 +147,17 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
                 ctx,
                 comment,
                 credential,
-                `Pull request was successfully rebased onto ${push.after.sha.slice(0, 7)} by @${push.after.author.login}`);
+                `Pull request was successfully rebased onto ${push.after.sha.slice(0, 7)} by @${
+                    push.after.author.login
+                }`,
+            );
             results.push({
                 code: 0,
-                reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) was successfully rebased onto [${push.after.sha.slice(0, 7)}](${push.after.url}) by @${push.after.author.login}`,
+                reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${
+                    pr.url
+                }) was successfully rebased onto [${push.after.sha.slice(0, 7)}](${push.after.url}) by @${
+                    push.after.author.login
+                }`,
             });
         }
     }
@@ -162,10 +176,12 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`);
     }
 };
 
-function isRebaseRequested(pr: PullRequest,
-                           push: Push,
-                           label: string = AutoRebaseOnPushLabel,
-                           tag = `[${AutoRebaseOnPushLabel}]`): boolean {
+function isRebaseRequested(
+    pr: PullRequestByRepoAndBranchQuery["PullRequest"][0],
+    push: RebaseOnPushSubscription["Push"][0],
+    label: string = AutoRebaseOnPushLabel,
+    tag = `[${AutoRebaseOnPushLabel}]`,
+): boolean {
     // 0. check labels
     if (pr?.labels?.some(l => l.name === label)) {
         return true;
@@ -197,4 +213,3 @@ function isRebaseRequested(pr: PullRequest,
 function isTagged(msg: string, tag: string): boolean {
     return msg && msg.indexOf(tag) >= 0;
 }
-

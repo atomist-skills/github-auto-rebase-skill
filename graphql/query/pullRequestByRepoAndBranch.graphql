@@ -24,5 +24,7 @@ query pullRequestByRepoAndBranch($owner: String!, $repo: String!, $branch: Strin
         labels {
             name
         }
+        title
+        body
     }
 }
