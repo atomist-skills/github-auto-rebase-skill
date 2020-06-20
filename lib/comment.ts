@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import { EventContext } from "@atomist/skill/lib/handler";
-import { gitHubComRepository } from "@atomist/skill/lib/project";
-import { gitHub } from "@atomist/skill/lib/project/github";
-import { GitHubAppCredential, GitHubCredential } from "@atomist/skill/lib/secrets";
+import { EventContext, github, repository, secret } from "@atomist/skill";
 import { PullRequest } from "./typings/types";
 
 export interface GitHubCommentDetails {
@@ -31,13 +28,13 @@ export interface GitHubCommentDetails {
 export type PullRequestCommentCreator<T> = (
     ctx: EventContext,
     pr: PullRequest,
-    credential: GitHubAppCredential | GitHubCredential,
+    credential: secret.GitHubAppCredential | secret.GitHubCredential,
     body: string,
 ) => Promise<T>;
 export type PullRequestCommentUpdater<T> = (
     ctx: EventContext,
     comment: T,
-    credential: GitHubAppCredential | GitHubCredential,
+    credential: secret.GitHubAppCredential | secret.GitHubCredential,
     body: string,
 ) => Promise<void>;
 
@@ -48,14 +45,14 @@ export const gitHubPullRequestCommentCreator: PullRequestCommentCreator<GitHubCo
     body,
 ) => {
     const result = (
-        await gitHub(
-            gitHubComRepository({ owner: pr.repo.owner, repo: pr.repo.name, credential }),
-        ).issues.createComment({
-            owner: pr.repo.owner,
-            repo: pr.repo.name,
-            issue_number: pr.number,
-            body,
-        })
+        await github
+            .api(repository.gitHub({ owner: pr.repo.owner, repo: pr.repo.name, credential }))
+            .issues.createComment({
+                owner: pr.repo.owner,
+                repo: pr.repo.name,
+                issue_number: pr.number,
+                body,
+            })
     ).data;
     await ctx.audit.log(body);
     return {
@@ -73,7 +70,7 @@ export const gitHubPullRequestCommentUpdater: PullRequestCommentUpdater<GitHubCo
     credential,
     body,
 ) => {
-    await gitHub(gitHubComRepository({ owner: comment.owner, repo: comment.repo, credential })).issues.updateComment({
+    await github.api(repository.gitHub({ owner: comment.owner, repo: comment.repo, credential })).issues.updateComment({
         owner: comment.owner,
         repo: comment.repo,
         comment_id: comment.id,

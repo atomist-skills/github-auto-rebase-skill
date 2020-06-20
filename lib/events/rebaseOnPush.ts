@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-import { EventHandler } from "@atomist/skill/lib/handler";
-import { warn } from "@atomist/skill/lib/log";
-import { gitHubComRepository } from "@atomist/skill/lib/project";
-import { checkout } from "@atomist/skill/lib/project/git";
-import { gitHubAppToken } from "@atomist/skill/lib/secrets";
+import { EventHandler, git, github, log, repository, secret } from "@atomist/skill";
 import { codeLine } from "@atomist/slack-messages";
 import * as _ from "lodash";
 import { gitHubPullRequestCommentCreator, gitHubPullRequestCommentUpdater } from "../comment";
 import { RebaseConfiguration } from "../configuration";
+import { AutoRebaseOnPushLabel } from "./convergePullRequestAutoRebaseLabels";
 import {
     PullRequestByRepoAndBranchQuery,
     PullRequestByRepoAndBranchQueryVariables,
     RebaseOnPushSubscription,
 } from "../typings/types";
 import { truncateCommitMessage } from "../util";
-import { AutoRebaseOnPushLabel } from "./convergePullRequestAutoRebaseLabels";
 
 export const handler: EventHandler<RebaseOnPushSubscription, RebaseConfiguration> = async ctx => {
     const push = ctx.data.Push[0];
@@ -58,7 +54,7 @@ export const handler: EventHandler<RebaseOnPushSubscription, RebaseConfiguration
 
             const { repo } = pr;
             const credential = await ctx.credential.resolve(
-                gitHubAppToken({ owner: repo.owner, repo: repo.name, apiUrl: repo.org.provider.apiUrl }),
+                secret.gitHubAppToken({ owner: repo.owner, repo: repo.name, apiUrl: repo.org.provider.apiUrl }),
             );
 
             const comment = await gitHubPullRequestCommentCreator(
@@ -68,11 +64,12 @@ export const handler: EventHandler<RebaseOnPushSubscription, RebaseConfiguration
                 `Pull request rebase is in progress because @${push.after.author.login} pushed ${push.commits.length} ${
                     push.commits.length === 1 ? "commit" : "commits"
                 } to **${push.branch}**:
-${commits}`,
+${commits}
+${github.formatMarkers(ctx)}`,
             );
 
             const project = await ctx.project.clone(
-                gitHubComRepository({
+                repository.gitHub({
                     owner: repo.owner,
                     repo: repo.name,
                     credential,
@@ -82,14 +79,15 @@ ${commits}`,
             );
 
             try {
-                await checkout(project, pr.branchName);
+                await git.checkout(project, pr.branchName);
             } catch (e) {
-                warn("Failed to checkout PR branch: %s", e.message);
+                log.warn("Failed to checkout PR branch: %s", e.message);
                 await gitHubPullRequestCommentUpdater(
                     ctx,
                     comment,
                     credential,
-                    `Pull request rebase failed because branch **${pr.branchName}** couldn't be checked out`,
+                    `Pull request rebase failed because branch **${pr.branchName}** couldn't be checked out
+${github.formatMarkers(ctx)}`,
                 );
                 results.push({
                     code: 0,
@@ -104,7 +102,7 @@ ${commits}`,
                 }
                 await project.exec("git", ["rebase", ...args, `origin/${pr.baseBranchName}`]);
             } catch (e) {
-                warn("Failed to rebase PR branch: %s", e.message);
+                log.warn("Failed to rebase PR branch: %s", e.message);
 
                 const result = await project.exec("git", ["diff", "--name-only", "--diff-filter=U"]);
                 const conflicts = result.stdout.trim().split("\n");
@@ -116,7 +114,8 @@ ${commits}`,
                     `Pull request rebase to ${push.after.sha.slice(0, 7)} by @${
                         push.after.author.login
                     } failed because of following conflicting ${conflicts.length === 1 ? "file" : "files"}:
-${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`,
+${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}
+${github.formatMarkers(ctx)}`,
                 );
                 results.push({
                     code: 0,
@@ -128,13 +127,14 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`,
             try {
                 await project.exec("git", ["push", "origin", pr.branchName, "--force-with-lease"]);
             } catch (e) {
-                warn("Failed to force push PR branch: %s", e.message);
+                log.warn("Failed to force push PR branch: %s", e.message);
 
                 await gitHubPullRequestCommentUpdater(
                     ctx,
                     comment,
                     credential,
-                    `Pull request rebase failed because force push to **${pr.branchName}** errored`,
+                    `Pull request rebase failed because force push to **${pr.branchName}** errored
+${github.formatMarkers(ctx)}`,
                 );
                 results.push({
                     code: 0,
@@ -147,9 +147,8 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`,
                 ctx,
                 comment,
                 credential,
-                `Pull request was successfully rebased onto ${push.after.sha.slice(0, 7)} by @${
-                    push.after.author.login
-                }`,
+                `Pull request was successfully rebased onto ${push.after.sha.slice(0, 7)} by @${push.after.author.login}
+${github.formatMarkers(ctx)}`,
             );
             results.push({
                 code: 0,

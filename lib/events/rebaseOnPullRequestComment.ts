@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import { EventHandler } from "@atomist/skill/lib/handler";
-import { warn } from "@atomist/skill/lib/log";
-import { gitHubComRepository } from "@atomist/skill/lib/project";
-import { checkout } from "@atomist/skill/lib/project/git";
-import { gitHubAppToken } from "@atomist/skill/lib/secrets";
+import { EventHandler, git, secret, repository, log, github } from "@atomist/skill";
 import { codeLine } from "@atomist/slack-messages";
 import { gitHubPullRequestCommentCreator, gitHubPullRequestCommentUpdater } from "../comment";
 import { RebaseConfiguration } from "../configuration";
@@ -29,13 +25,19 @@ export const handler: EventHandler<RebaseOnPullRequestCommentSubscription, Rebas
     const repo = pr.repo;
 
     const credential = await ctx.credential.resolve(
-        gitHubAppToken({ owner: repo.owner, repo: repo.name, apiUrl: repo.org.provider.apiUrl }),
+        secret.gitHubAppToken({ owner: repo.owner, repo: repo.name, apiUrl: repo.org.provider.apiUrl }),
     );
 
-    const comment = await gitHubPullRequestCommentCreator(ctx, pr, credential, `Pull request rebase is in progress`);
+    const comment = await gitHubPullRequestCommentCreator(
+        ctx,
+        pr,
+        credential,
+        `Pull request rebase is in progress
+${github.formatMarkers(ctx)}`,
+    );
 
     const project = await ctx.project.clone(
-        gitHubComRepository({
+        repository.gitHub({
             owner: repo.owner,
             repo: repo.name,
             credential,
@@ -45,14 +47,15 @@ export const handler: EventHandler<RebaseOnPullRequestCommentSubscription, Rebas
     );
 
     try {
-        await checkout(project, pr.branchName);
+        await git.checkout(project, pr.branchName);
     } catch (e) {
-        warn("Failed to checkout PR branch: %s", e.message);
+        log.warn("Failed to checkout PR branch: %s", e.message);
         await gitHubPullRequestCommentUpdater(
             ctx,
             comment,
             credential,
-            `Pull request rebase failed because branch **${pr.branchName}** couldn't be checked out`,
+            `Pull request rebase failed because branch **${pr.branchName}** couldn't be checked out
+${github.formatMarkers(ctx)}`,
         );
         return {
             code: 0,
@@ -66,7 +69,7 @@ export const handler: EventHandler<RebaseOnPullRequestCommentSubscription, Rebas
         }
         await project.exec("git", ["rebase", ...args, `origin/${pr.baseBranchName}`]);
     } catch (e) {
-        warn("Failed to rebase PR branch: %s", e.message);
+        log.warn("Failed to rebase PR branch: %s", e.message);
 
         const result = await project.exec("git", ["diff", "--name-only", "--diff-filter=U"]);
         const conflicts = result.stdout.trim().split("\n");
@@ -76,7 +79,8 @@ export const handler: EventHandler<RebaseOnPullRequestCommentSubscription, Rebas
             comment,
             credential,
             `Pull request rebase failed because of following conflicting ${conflicts.length === 1 ? "file" : "files"}:
-${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`,
+${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}
+${github.formatMarkers(ctx)}`,
         );
         return {
             code: 0,
@@ -87,13 +91,14 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`,
     try {
         await project.exec("git", ["push", "origin", pr.branchName, "--force-with-lease"]);
     } catch (e) {
-        warn("Failed to force push PR branch: %s", e.message);
+        log.warn("Failed to force push PR branch: %s", e.message);
 
         await gitHubPullRequestCommentUpdater(
             ctx,
             comment,
             credential,
-            `Pull request rebase failed because force push to **${pr.branchName}** errored`,
+            `Pull request rebase failed because force push to **${pr.branchName}** errored
+${github.formatMarkers(ctx)}`,
         );
         return {
             code: 0,
@@ -101,7 +106,13 @@ ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}`,
         };
     }
 
-    await gitHubPullRequestCommentUpdater(ctx, comment, credential, `Pull request was successfully rebased`);
+    await gitHubPullRequestCommentUpdater(
+        ctx,
+        comment,
+        credential,
+        `Pull request was successfully rebased
+${github.formatMarkers(ctx)}`,
+    );
     return {
         code: 0,
         reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) was successfully rebased`,

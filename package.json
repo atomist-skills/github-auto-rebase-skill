@@ -18,7 +18,7 @@
   "license": "Apache-2.0",
   "main": "node_modules/@atomist/skill/lib/function.js",
   "dependencies": {
-    "@atomist/skill": "0.1.0-master.20200617150530",
+    "@atomist/skill": "0.1.0-master.20200620191116",
     "@atomist/slack-messages": "^1.1.1",
     "lodash": "^4.17.15"
   },

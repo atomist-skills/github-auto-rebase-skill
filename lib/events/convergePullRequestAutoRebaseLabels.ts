@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import { EventHandler } from "@atomist/skill/lib/handler";
-import { gitHubComRepository } from "@atomist/skill/lib/project";
-import { convergeLabel } from "@atomist/skill/lib/project/github";
-import { gitHubAppToken } from "@atomist/skill/lib/secrets";
+import { EventHandler, secret, repository, github } from "@atomist/skill";
 import { ConvergePullRequestAutoRebaseLabelsSubscription, PullRequestAction } from "../typings/types";
 
 export const AutoRebaseOnPushLabel = "auto-rebase:on-push";
@@ -39,11 +36,11 @@ export const handler: EventHandler<ConvergePullRequestAutoRebaseLabelsSubscripti
 
     const repo = ctx.data.PullRequest[0].repo;
     const { owner, name } = repo;
-    const credential = await ctx.credential.resolve(gitHubAppToken({ owner, repo: name }));
+    const credential = await ctx.credential.resolve(secret.gitHubAppToken({ owner, repo: name }));
 
-    const id = gitHubComRepository({ owner, repo: name, credential });
+    const id = repository.gitHub({ owner, repo: name, credential });
     await ctx.audit.log(`Converging auto-rebase label '${AutoRebaseOnPushLabel}'`);
-    await convergeLabel(id, AutoRebaseOnPushLabel, "0E8A16", "Auto-rebase pull request branch");
+    await github.convergeLabel(id, AutoRebaseOnPushLabel, "0E8A16", "Auto-rebase pull request branch");
     await ctx.audit.log(`Converged auto-rebase label 'AutoRebaseOnPushLabel'`);
     return {
         code: 0,
