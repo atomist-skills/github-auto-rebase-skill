@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.1.3...HEAD)
 
+### Added
+
+-   Add tags for generated PR comments. [23df03b](https://github.com/atomist-skills/github-auto-rebase-skill/commit/23df03b8cc341e8565b5b0cba50d4b333145175e)
+
 ## [2.1.3](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.1.2...2.1.3) - 2020-06-18
 
 ### Changed
