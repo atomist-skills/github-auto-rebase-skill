@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-import { parameter, ParameterType, resourceProvider, skill } from "@atomist/skill";
+import { Category, parameter, ParameterType, resourceProvider, skill } from "@atomist/skill";
 import { RebaseConfiguration } from "./lib/configuration";
 
 export const Skill = skill<RebaseConfiguration & { repos: any }>({
+    name: "github-auto-rebase-skill",
+    namespace: "atomist",
+    displayName: "Auto-rebase Pull Request",
+    author: "Atomist",
+    categories: [Category.CodeReview, Category.DevEx],
+    homepageUrl: "https://github.com/atomist-skills/github-auto-rebase-skill",
+    repositoryUrl: "https://github.com/atomist-skills/github-auto-rebase-skill.git",
+    iconUrl: "file://docs/images/icon.svg",
+    license: "Apache-2.0",
+
     runtime: {
         memory: 1024,
         timeout: 540,
