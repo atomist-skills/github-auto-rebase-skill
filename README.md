@@ -2,8 +2,8 @@
 
 <!--<!---atomist-skill-description:start--->
     
-Automatically rebase a pull request branch if there are pushes to the base branch
-    
+Rebase a pull request branch when there are pushes to the base branch
+
 <!---atomist-skill-description:end--->
 
 ---
