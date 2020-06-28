@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 -   Update description. [5e28ac2](https://github.com/atomist-skills/github-auto-rebase-skill/commit/5e28ac2216f28a9dbc3f21194396f855954fb41c)
+-   Update displayName. [13f9734](https://github.com/atomist-skills/github-auto-rebase-skill/commit/13f97343053d67b1993033aa7c6f95c0d0774670)
 
 ## [2.1.4](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.1.3...2.1.4) - 2020-06-23
 
