@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 -   Add different chat providers. [9f520f9](https://github.com/atomist-skills/github-auto-rebase-skill/commit/9f520f964ab9386caa130677fbb1dd03fad54053)
 
+### Changed
+
+-   Update description. [5e28ac2](https://github.com/atomist-skills/github-auto-rebase-skill/commit/5e28ac2216f28a9dbc3f21194396f855954fb41c)
+
 ## [2.1.4](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.1.3...2.1.4) - 2020-06-23
 
 ### Added
