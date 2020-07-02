@@ -1,21 +1,21 @@
 subscription rebaseOnPullRequestComment {
-    Comment {
-        body @matches(re: "^\\s*/rebase\\s*$")
-        pullRequest(state: "open") @required {
-            url
-            baseBranchName
-            branchName
-            state
-            number
-            repo {
-                owner
-                name
-                org {
-                    provider {
-                        apiUrl
-                    }
-                }
-            }
+  Comment {
+    body @matches(re: "^\\s*/rebase\\s*$")
+    pullRequest(state: "open") @required {
+      url
+      baseBranchName
+      branchName
+      state
+      number
+      repo {
+        owner
+        name
+        org {
+          provider {
+            apiUrl
+          }
         }
+      }
     }
+  }
 }
