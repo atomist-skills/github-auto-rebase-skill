@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.1.5...HEAD)
 
+### Changed
+
+-   Move to plural in displayName. [2cbea7c](https://github.com/atomist-skills/github-auto-rebase-skill/commit/2cbea7c7e7c01ff7cb07d640eb8d9e2e56d9074f)
+
 ## [2.1.5](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.1.4...2.1.5) - 2020-06-29
 
 ### Added
