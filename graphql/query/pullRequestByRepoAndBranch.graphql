@@ -1,30 +1,34 @@
-query pullRequestByRepoAndBranch($owner: String!, $repo: String!, $branch: String!) {
-    PullRequest(state: "open", baseBranchName: $branch) {
-        url
-        number
-        comments{
-            body
-        }
-        commits {
-            sha
-            message
-        }
-        repo(owner: $owner, name: $repo) @required {
-            owner
-            name
-            org {
-                provider {
-                    providerId
-                    apiUrl
-                }
-            }
-        }
-        branchName
-        baseBranchName
-        labels {
-            name
-        }
-        title
-        body
+query pullRequestByRepoAndBranch(
+  $owner: String!
+  $repo: String!
+  $branch: String!
+) {
+  PullRequest(state: "open", baseBranchName: $branch) {
+    url
+    number
+    comments {
+      body
     }
+    commits {
+      sha
+      message
+    }
+    repo(owner: $owner, name: $repo) @required {
+      owner
+      name
+      org {
+        provider {
+          providerId
+          apiUrl
+        }
+      }
+    }
+    branchName
+    baseBranchName
+    labels {
+      name
+    }
+    title
+    body
+  }
 }

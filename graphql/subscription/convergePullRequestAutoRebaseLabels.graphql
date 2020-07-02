@@ -1,17 +1,17 @@
 subscription convergePullRequestAutoRebaseLabels {
-    PullRequest {
-        url
-        number
-        action
-        repo {
-            url
-            owner
-            name
-            org {
-                provider {
-                    apiUrl
-                }
-            }
+  PullRequest {
+    url
+    number
+    action
+    repo {
+      url
+      owner
+      name
+      org {
+        provider {
+          apiUrl
         }
+      }
     }
+  }
 }
