@@ -20,7 +20,7 @@ import { RebaseConfiguration } from "./lib/configuration";
 export const Skill = skill<RebaseConfiguration & { repos: any }>({
     name: "github-auto-rebase-skill",
     namespace: "atomist",
-    displayName: "Auto-Rebase Pull Request",
+    displayName: "Auto-Rebase Pull Requests",
     author: "Atomist",
     categories: [Category.CodeReview, Category.DevEx],
     homepageUrl: "https://github.com/atomist-skills/github-auto-rebase-skill",
