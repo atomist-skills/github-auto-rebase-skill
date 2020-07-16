@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.1.6...HEAD)
 
+### Changed
+
+-   Hide markers in PR comments. [9f82371](https://github.com/atomist-skills/github-auto-rebase-skill/commit/9f82371e257ecdff48f9de798fd828843bff0924)
+
 ## [2.1.6](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.1.5...2.1.6) - 2020-07-02
 
 ### Changed
