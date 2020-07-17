@@ -14,49 +14,57 @@
  * limitations under the License.
  */
 
-import { Category, parameter, ParameterType, resourceProvider, skill } from "@atomist/skill";
+import {
+	Category,
+	parameter,
+	ParameterType,
+	resourceProvider,
+	skill,
+} from "@atomist/skill";
 import { RebaseConfiguration } from "./lib/configuration";
 
 export const Skill = skill<RebaseConfiguration & { repos: any }>({
-    name: "github-auto-rebase-skill",
-    namespace: "atomist",
-    displayName: "Auto-Rebase Pull Requests",
-    author: "Atomist",
-    categories: [Category.CodeReview, Category.DevEx],
-    homepageUrl: "https://github.com/atomist-skills/github-auto-rebase-skill",
-    repositoryUrl: "https://github.com/atomist-skills/github-auto-rebase-skill.git",
-    iconUrl: "file://docs/images/icon.svg",
-    license: "Apache-2.0",
+	name: "github-auto-rebase-skill",
+	namespace: "atomist",
+	displayName: "Auto-Rebase Pull Requests",
+	author: "Atomist",
+	categories: [Category.CodeReview, Category.DevEx],
+	homepageUrl: "https://github.com/atomist-skills/github-auto-rebase-skill",
+	repositoryUrl:
+		"https://github.com/atomist-skills/github-auto-rebase-skill.git",
+	iconUrl: "file://docs/images/icon.svg",
+	license: "Apache-2.0",
 
-    runtime: {
-        memory: 1024,
-        timeout: 540,
-    },
+	runtime: {
+		memory: 1024,
+		timeout: 540,
+	},
 
-    resourceProviders: {
-        github: resourceProvider.gitHub({ minRequired: 1 }),
-        slack: resourceProvider.chat({ minRequired: 0 }),
-    },
+	resourceProviders: {
+		github: resourceProvider.gitHub({ minRequired: 1 }),
+		slack: resourceProvider.chat({ minRequired: 0 }),
+	},
 
-    parameters: {
-        strategy: {
-            type: ParameterType.SingleChoice,
-            displayName: "Default merge strategy",
-            description: "Select which merge strategy to use when rebasing pull request branches",
-            options: [
-                {
-                    text: "Ours",
-                    value: "ours",
-                },
-                {
-                    text: "Theirs",
-                    value: "theirs",
-                },
-            ],
-            required: false,
-        },
-        repos: parameter.repoFilter({ required: false }),
-    },
+	parameters: {
+		strategy: {
+			type: ParameterType.SingleChoice,
+			displayName: "Default merge strategy",
+			description:
+				"Select which merge strategy to use when rebasing pull request branches",
+			options: [
+				{
+					text: "Ours",
+					value: "ours",
+				},
+				{
+					text: "Theirs",
+					value: "theirs",
+				},
+			],
+			required: false,
+		},
+		repos: parameter.repoFilter({ required: false }),
+	},
 
-    subscriptions: ["file://graphql/subscription/*.graphql"],
+	subscriptions: ["file://graphql/subscription/*.graphql"],
 });

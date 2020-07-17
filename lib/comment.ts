@@ -18,63 +18,77 @@ import { EventContext, github, repository, secret } from "@atomist/skill";
 import { PullRequest } from "./typings/types";
 
 export interface GitHubCommentDetails {
-    apiUrl: string;
-    owner: string;
-    repo: string;
-    number: number;
-    id: number;
+	apiUrl: string;
+	owner: string;
+	repo: string;
+	number: number;
+	id: number;
 }
 
 export type PullRequestCommentCreator<T> = (
-    ctx: EventContext,
-    pr: PullRequest,
-    credential: secret.GitHubAppCredential | secret.GitHubCredential,
-    body: string,
+	ctx: EventContext,
+	pr: PullRequest,
+	credential: secret.GitHubAppCredential | secret.GitHubCredential,
+	body: string,
 ) => Promise<T>;
 export type PullRequestCommentUpdater<T> = (
-    ctx: EventContext,
-    comment: T,
-    credential: secret.GitHubAppCredential | secret.GitHubCredential,
-    body: string,
+	ctx: EventContext,
+	comment: T,
+	credential: secret.GitHubAppCredential | secret.GitHubCredential,
+	body: string,
 ) => Promise<void>;
 
 export const gitHubPullRequestCommentCreator: PullRequestCommentCreator<GitHubCommentDetails> = async (
-    ctx,
-    pr,
-    credential,
-    body,
+	ctx,
+	pr,
+	credential,
+	body,
 ) => {
-    const result = (
-        await github
-            .api(repository.gitHub({ owner: pr.repo.owner, repo: pr.repo.name, credential }))
-            .issues.createComment({
-                owner: pr.repo.owner,
-                repo: pr.repo.name,
-                issue_number: pr.number,
-                body,
-            })
-    ).data;
-    await ctx.audit.log(body);
-    return {
-        apiUrl: pr.repo.org.provider.apiUrl,
-        owner: pr.repo.owner,
-        repo: pr.repo.name,
-        number: pr.number,
-        id: result.id,
-    };
+	const result = (
+		await github
+			.api(
+				repository.gitHub({
+					owner: pr.repo.owner,
+					repo: pr.repo.name,
+					credential,
+				}),
+			)
+			.issues.createComment({
+				owner: pr.repo.owner,
+				repo: pr.repo.name,
+				issue_number: pr.number,
+				body,
+			})
+	).data;
+	await ctx.audit.log(body);
+	return {
+		apiUrl: pr.repo.org.provider.apiUrl,
+		owner: pr.repo.owner,
+		repo: pr.repo.name,
+		number: pr.number,
+		id: result.id,
+	};
 };
 
 export const gitHubPullRequestCommentUpdater: PullRequestCommentUpdater<GitHubCommentDetails> = async (
-    ctx,
-    comment,
-    credential,
-    body,
+	ctx,
+	comment,
+	credential,
+	body,
 ) => {
-    await github.api(repository.gitHub({ owner: comment.owner, repo: comment.repo, credential })).issues.updateComment({
-        owner: comment.owner,
-        repo: comment.repo,
-        comment_id: comment.id,
-        body,
-    });
-    await ctx.audit.log(body);
+	await github
+		.api(
+			repository.gitHub({
+				owner: comment.owner,
+				repo: comment.repo,
+				credential,
+			}),
+		)
+		.issues.updateComment({
+			owner: comment.owner,
+			repo: comment.repo,
+			comment_id: comment.id,
+			body,
+		});
+	await ctx.audit.log(body);
 };
