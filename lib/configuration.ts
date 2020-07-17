@@ -15,5 +15,5 @@
  */
 
 export interface RebaseConfiguration {
-    strategy?: "ours" | "theirs";
+	strategy?: "ours" | "theirs";
 }
