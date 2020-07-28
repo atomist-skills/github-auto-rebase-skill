@@ -57,7 +57,12 @@ export const handler: EventHandler<
 
 	if (!!prs?.PullRequest && prs.PullRequest.length > 0) {
 		const commits = push.commits
-			.map(c => `- ${c.sha.slice(0, 7)} _${truncateCommitMessage(c.message)}_`)
+			.map(
+				c =>
+					`- ${c.sha.slice(0, 7)} _${truncateCommitMessage(
+						c.message,
+					)}_`,
+			)
 			.join("\n");
 
 		for (const pr of prs.PullRequest) {
@@ -193,11 +198,14 @@ ${github.formatMarkers(ctx)}`,
 			);
 			results.push({
 				code: 0,
-				reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${
+				reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${
+					pr.number
+				}](${
 					pr.url
-				}) was successfully rebased onto [${push.after.sha.slice(0, 7)}](${
-					push.after.url
-				}) by @${push.after.author.login}`,
+				}) was successfully rebased onto [${push.after.sha.slice(
+					0,
+					7,
+				)}](${push.after.url}) by @${push.after.author.login}`,
 			});
 		}
 	}
