@@ -1,7 +1,7 @@
 {
   "main": "node_modules/@atomist/skill/lib/function.js",
   "dependencies": {
-    "@atomist/skill": "0.1.1-8",
+    "@atomist/skill": "^0.1.1-115",
     "@atomist/slack-messages": "^1.1.1",
     "lodash": "^4.17.20"
   },
@@ -59,7 +59,7 @@
     "skill": "run-s compile test skill:generate skill:bundle skill:package",
     "skill:generate": "atm-skill generate",
     "skill:clean": "atm-skill clean",
-    "skill:bundle": "atm-skill bundle --minify --source-map",
+    "skill:bundle": "atm-skill bundle --no-minify --no-source-map",
     "skill:package": "atm-skill package",
     "skill:register": "atm-skill register",
     "atm:lint:prettier": "prettier --write",
