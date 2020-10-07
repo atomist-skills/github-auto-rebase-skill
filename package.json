@@ -2,7 +2,7 @@
   "main": "node_modules/@atomist/skill/lib/function.js",
   "dependencies": {
     "@atomist/skill": "^0.2.3",
-    "@atomist/slack-messages": "^1.1.1",
+    "@atomist/slack-messages": "^1.2.0",
     "lodash": "^4.17.20"
   },
   "devDependencies": {
