@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.1.8...HEAD)
 
+### Changed
+
+-   Remove single dispatch. [63e8a16](https://github.com/atomist-skills/github-auto-rebase-skill/commit/63e8a16d2d26f48b2eb4336e5cf0160e77ee46a6)
+
 ## [2.1.8](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.1.7...2.1.8) - 2020-07-28
 
 ### Changed
