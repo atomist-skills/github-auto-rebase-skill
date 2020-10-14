@@ -21,6 +21,7 @@ import {
 	log,
 	repository,
 	secret,
+	status,
 } from "@atomist/skill";
 import { codeLine } from "@atomist/slack-messages";
 import * as _ from "lodash";
@@ -115,16 +116,17 @@ ${github.formatMarkers(ctx)}`,
 					}** couldn't be checked out
 ${github.formatMarkers(ctx)}`,
 				);
-				results.push({
-					code: 0,
-					reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because branch ${pr.branchName} couldn't be checked out`,
-				});
+				results.push(
+					status.success(
+						`Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because branch ${pr.branchName} couldn't be checked out`,
+					),
+				);
 				continue;
 			}
 			try {
 				const args = [];
-				if (ctx.configuration[0]?.parameters?.strategy) {
-					args.push("-X", ctx.configuration[0].parameters.strategy);
+				if (ctx.configuration?.parameters?.strategy) {
+					args.push("-X", ctx.configuration.parameters.strategy);
 				}
 				await project.exec("git", [
 					"rebase",
@@ -153,10 +155,11 @@ ${github.formatMarkers(ctx)}`,
 ${conflicts.map(c => `- ${codeLine(c)}`).join("\n")}
 ${github.formatMarkers(ctx)}`,
 				);
-				results.push({
-					code: 0,
-					reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because of conflicts`,
-				});
+				results.push(
+					status.success(
+						`Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because of conflicts`,
+					),
+				);
 				continue;
 			}
 
@@ -179,10 +182,11 @@ ${github.formatMarkers(ctx)}`,
 					}** errored
 ${github.formatMarkers(ctx)}`,
 				);
-				results.push({
-					code: 0,
-					reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because force push errored`,
-				});
+				results.push(
+					status.success(
+						`Pull request [${pr.repo.owner}/${pr.repo.name}#${pr.number}](${pr.url}) rebase failed because force push errored`,
+					),
+				);
 				continue;
 			}
 
@@ -196,17 +200,18 @@ ${github.formatMarkers(ctx)}`,
 				)} by @${push.after.author.login}
 ${github.formatMarkers(ctx)}`,
 			);
-			results.push({
-				code: 0,
-				reason: `Pull request [${pr.repo.owner}/${pr.repo.name}#${
-					pr.number
-				}](${
-					pr.url
-				}) was successfully rebased onto [${push.after.sha.slice(
-					0,
-					7,
-				)}](${push.after.url}) by @${push.after.author.login}`,
-			});
+			results.push(
+				status.success(
+					`Pull request [${pr.repo.owner}/${pr.repo.name}#${
+						pr.number
+					}](${
+						pr.url
+					}) was successfully rebased onto [${push.after.sha.slice(
+						0,
+						7,
+					)}](${push.after.url}) by @${push.after.author.login}`,
+				),
+			);
 		}
 	}
 
@@ -216,11 +221,11 @@ ${github.formatMarkers(ctx)}`,
 			reason: results.map(r => r.reason).join("\n"),
 		};
 	} else {
-		return {
-			visibility: "hidden",
-			code: 0,
-			reason: `No open pull request that needs rebasing against branch ${push.branch}`,
-		};
+		return status
+			.success(
+				`No open pull request that needs rebasing against branch ${push.branch}`,
+			)
+			.hidden();
 	}
 };
 

@@ -83,8 +83,8 @@ ${github.formatMarkers(ctx)}`,
 	}
 	try {
 		const args = [];
-		if (ctx.configuration[0]?.parameters?.strategy) {
-			args.push("-X", ctx.configuration[0].parameters.strategy);
+		if (ctx.configuration?.parameters?.strategy) {
+			args.push("-X", ctx.configuration.parameters.strategy);
 		}
 		await project.exec("git", [
 			"rebase",
