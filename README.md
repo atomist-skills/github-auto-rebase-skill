@@ -1,104 +1,81 @@
 # `atomist/github-auto-rebase-skill`
 
-<!--<!---atomist-skill-description:start--->
+Rebase a pull request branch when there are pushes to the base branch.
 
-Rebase a pull request branch when there are pushes to the base branch
+:sparkles: [_**View this skill in the Atomist Skills Catalog**_][atomist-skill]
+to enable this skill on your repositories. :sparkles:
 
-<!---atomist-skill-description:end--->
+See the [Atomist website][atomist] for general information about Atomist Skills
+and the [Atomist documentation site][atomist-doc] for instructions on how to get
+started using Atomist Skills.
 
----
+[atomist-skill]:
+    https://go.atomist.com/catalog/skills/atomist/github-auto-rebase-skill
+    "Atomist Skills Catalog - Automate All Your Software Tasks"
+[atomist-doc]: https://docs.atomist.com/ "Atomist Documentation"
 
-<!---atomist-skill-long_description:start--->
+## Contributing
 
-Automatically rebase a pull request branch if there are pushes to the base
-branch. Keep pull request branches current with the base branch to identify
-merge issues and avoid a surprise when you go to merge. You don't have to think
-about your pull request branches any more — this skill keeps them in harmony
-with the base branch.
+Contributions to this project from community members are encouraged and
+appreciated. Please review the [Contributing Guidelines](CONTRIBUTING.md) for
+more information. Also see the [Development](#development) section in this
+document.
 
-<!---atomist-skill-long_description:end--->
+## Code of conduct
 
----
+This project is governed by the [Code of Conduct](CODE_OF_CONDUCT.md). You are
+expected to act in accordance with this code by participating. Please report any
+unacceptable behavior to code-of-conduct@atomist.com.
 
-<!---atomist-skill-readme:start--->
+## Connect
 
-# What it's useful for
+Follow [@atomist][atomist-twitter] on Twitter and [The Atomist
+Blog][atomist-blog].
 
-With this skill you can automatically rebase pull request branches when pushes
-to base branch happen.
+[atomist-twitter]: https://twitter.com/atomist "Atomist on Twitter"
+[atomist-blog]: https://blog.atomist.com/ "The Atomist Blog"
 
-For example, if open pull request branch `v2` has base branch `master`, and
-someone pushes a change to `master`, then `v2` will be rebased with the new
-commit(s) to `master`.
+## Support
 
-This approach makes it easy for pull request authors (or anyone with permissions
-in the repository) to flag a pull request for auto-rebase, simply by adding the
-`auto-rebase:on-push` label.
+General support questions should be discussed in the `#support` channel in the
+[Atomist community Slack workspace][slack].
 
-Alternatively you can request a rebase of pull request at any time by commenting
-with `/rebase` in a pull request comment.
+If you find a problem, please create an [issue](../../issues).
 
-# Before you get started
+## Development
 
-Connect and configure these integrations:
+You will need to install [Node.js][node] to build and test this project.
 
-1. **GitHub**
-2. **Slack or Microsoft Teams**
+[node]: https://nodejs.org/ "Node.js"
 
-The **GitHub** integration must be configured in order to use this skill. At
-least one repository must be selected. We recommend connecting the **Slack** or
-**Microsoft Teams** integration.
+### Build and test
 
-# How to configure
+Install dependencies.
 
-1. **Select the merge strategy**
+```
+$ npm ci
+```
 
-    The selected merge strategy will be used for the rebase.
+Use the `build` package script to compile, test, lint, and build the
+documentation.
 
-    ![Default merge-strategy](docs/images/default-merge-strategy.png)
+```
+$ npm run build
+```
 
-    You can select one of the options:
+### Release
 
-    - **Ours** — This option forces conflicting hunks to be auto-resolved
-      cleanly by favoring 'our' version. Changes from the other tree that do not
-      conflict with our side are reflected in the merge result.
-    - **Theirs** — This is the opposite of **Ours**.
+Releases are created by pushing a release [semantic version][semver] tag to the
+repository, Atomist Skills take care of the rest.
 
-    Review the [git documentation](https://git-scm.com/docs/merge-strategies)
-    for details on these options.
+To make this skill globally available, set its maturity to "stable" via the set
+maturity drop-down in its Atomist Community Slack channel.
 
-2. **Determine repository scope**
-
-    ![Repository filter](docs/images/repo-filter.png)
-
-    By default, this skill will be enabled for all repositories in all
-    organizations you have connected.
-
-    To restrict the organizations or specific repositories on which the skill
-    will run, you can explicitly choose organization(s) and repositories.
-
-# How to use Pull Request auto-rebase
-
-1. **Configure the skill, set default auto-rebase strategy**
-
-2. **For every new pull request raised, manually add the `auto-rebase:on-push`
-   label to enable auto-rebase**
-
-3. **Alternatively you can comment with `/rebase` to request an ad-hoc rebase of
-   a pull request**
-
-4. **Enjoy not having to manually rebase your pull request!**
-
-To create feature requests or bug reports, create an
-[issue in the repository for this skill](https://github.com/atomist-skills/github-auto-rebase-skill/issues).
-See the [code](https://github.com/atomist-skills/github-auto-rebase-skill) for
-the skill.
-
-<!---atomist-skill-readme:end--->
+[semver]: https://semver.org/ "Semantic Version"
 
 ---
 
 Created by [Atomist][atomist]. Need Help? [Join our Slack workspace][slack].
 
-[atomist]: https://atomist.com/ "Atomist - How Teams Deliver Software"
+[atomist]: https://atomist.com/ "Atomist - Automate All the Software Things"
 [slack]: https://join.atomist.com/ "Atomist Community Slack"

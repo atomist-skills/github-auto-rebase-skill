@@ -27,12 +27,9 @@ export const Skill = skill<RebaseConfiguration & { repos: any }>({
 	name: "github-auto-rebase-skill",
 	namespace: "atomist",
 	displayName: "Auto-Rebase Pull Requests",
-	author: "Atomist",
+	description:
+		"Rebase a pull request branch when there are pushes to the base branch",
 	categories: [Category.RepoManagement],
-	homepageUrl: "https://github.com/atomist-skills/github-auto-rebase-skill",
-	repositoryUrl:
-		"https://github.com/atomist-skills/github-auto-rebase-skill.git",
-	license: "Apache-2.0",
 
 	runtime: {
 		memory: 1024,
