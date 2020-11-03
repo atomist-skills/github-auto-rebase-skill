@@ -52,11 +52,11 @@ export const Skill = skill<RebaseConfiguration & { repos: any }>({
 				"Select which merge strategy to use when rebasing pull request branches",
 			options: [
 				{
-					text: "Ours",
+					text: "Recursive - Ours",
 					value: "ours",
 				},
 				{
-					text: "Theirs",
+					text: "Recursive - Theirs",
 					value: "theirs",
 				},
 			],
