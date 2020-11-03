@@ -11,7 +11,7 @@ the base branch.
 -   Select which pull requests get automatically rebased using the
     <span style="border-radius:24px;background-color:rgb(14,138,22);box-shadow:none;box-sizing:border-box;color:rgb(255,255,255);display:inline-block;font-size:12px;font-weight:500;line-height:18px;margin-bottom:2px;margin-left:0px;margin-right:2px;margin-top:2px;overflow-wrap:break-word;padding-bottom:0px;padding-left:7px;padding-right:7px;padding-top:0px;">auto-rebase:on-push</span>
     label
--   Trigger a rebase of any pull request at any time by adding the comment
+-   Initiate a rebase of any pull request at any time by adding the comment
     `/rebase` to it
 
 For example, if open pull request branch `feature-x` has base branch `main`, and
@@ -24,3 +24,7 @@ repository it is enabled on.
 ### Rebase pull request branch when new commits are pushed to base branch
 
 ![Rebase pull request](docs/images/rebase-pr.png)
+
+### Initiate rebase with pull request comment
+
+![Rebase after comment](docs/images/rebase-comment.png)
