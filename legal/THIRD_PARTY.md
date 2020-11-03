@@ -1,5 +1,7 @@
 # `@atomist/github-auto-rebase-skill`
 
+`@atomist/github-auto-rebase-skill` is licensed under Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0).
+
 This page details all runtime dependencies of `@atomist/github-auto-rebase-skill`.
 
 ## Licenses
