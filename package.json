@@ -66,7 +66,6 @@
     "start": "functions-framework --target=entryPoint --signature-type=event",
     "test": "echo no tests",
     "test:one": "mocha --require espower-typescript/guess \"test/**/${TEST:-*.test.ts}\"",
-    "typedoc": "npm run doc",
     "skill": "run-s compile test skill:generate skill:bundle skill:package",
     "skill:generate": "atm-skill generate",
     "skill:clean": "atm-skill clean",
