@@ -13,6 +13,8 @@ the base branch.
     label
 -   Initiate a rebase of any pull request at any time by adding the comment
     `/rebase` to it
+-   Automatically close pull requests if there are no differences between base
+    and pull request branch after rebase
 
 For example, if open pull request branch `feature-x` has base branch `main`, and
 someone pushes new commits to `main`, then `feature-x` will be rebased onto the
