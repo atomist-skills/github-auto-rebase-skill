@@ -38,7 +38,6 @@ export const Skill = skill<RebaseConfiguration & { repos: any }>({
 
 	resourceProviders: {
 		github: resourceProvider.gitHub({ minRequired: 1 }),
-		slack: resourceProvider.chat({ minRequired: 0 }),
 	},
 
 	parameters: {

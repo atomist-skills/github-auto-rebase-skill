@@ -4,10 +4,6 @@ Connect and configure these integrations:
 
 1.  [**GitHub**](https://go.atomist.com/catalog/integration/github "GitHub Integration")
     _(required)_
-1.  [**Slack**](https://go.atomist.com/catalog/integration/slack "Slack Integration")
-    or
-    [**Microsoft Teams**](https://go.atomist.com/catalog/integration/microsoft-teams "Microsoft Teams Integration")
-    _(optional)_
 
 ## How to configure
 
