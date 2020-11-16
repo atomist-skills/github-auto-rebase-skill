@@ -30,6 +30,8 @@ export const Skill = skill<RebaseConfiguration & { repos: any }>({
 	description:
 		"Rebase a pull request branch when there are pushes to the base branch",
 	categories: [Category.RepoManagement],
+	iconUrl:
+		"https://raw.githubusercontent.com/atomist-skills/github-auto-rebase-skill/main/docs/images/icon.svg",
 
 	runtime: {
 		memory: 1024,
