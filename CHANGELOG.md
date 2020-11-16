@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 -   Provide more accurate names for merge strategies. [a436e49](https://github.com/atomist-skills/github-auto-rebase-skill/commit/a436e4987f7ad0fc67be0edfc52e1dada12a8d10)
+-   Update skill icon. [9433192](https://github.com/atomist-skills/github-auto-rebase-skill/commit/94331928c07f8d7f1304a01f3d5f77a8d34af06e)
 
 ### Removed
 
