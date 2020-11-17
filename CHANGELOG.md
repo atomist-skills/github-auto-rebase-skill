@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.3.0...HEAD)
 
+### Changed
+
+-   Use GraphQL type generator from @atomist/skill. [fe21d61](https://github.com/atomist-skills/github-auto-rebase-skill/commit/fe21d612f95061b5142ccf9087de163c1e8840ba)
+
 ## [2.3.0](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.2.0...2.3.0) - 2020-11-17
 
 ### Changed
