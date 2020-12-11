@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { EventHandler, secret, repository, github } from "@atomist/skill";
+import { EventHandler, github, repository, secret } from "@atomist/skill";
+
 import {
 	ConvergePullRequestAutoRebaseLabelsSubscription,
 	PullRequestAction,

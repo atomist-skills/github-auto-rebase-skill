@@ -17,12 +17,13 @@
 import {
 	EventHandler,
 	git,
-	secret,
-	repository,
-	log,
 	github,
+	log,
+	repository,
+	secret,
 } from "@atomist/skill";
 import { codeLine } from "@atomist/slack-messages";
+
 import {
 	gitHubPullRequestCommentCreator,
 	gitHubPullRequestCommentUpdater,
