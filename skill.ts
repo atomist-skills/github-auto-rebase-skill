@@ -21,6 +21,7 @@ import {
 	resourceProvider,
 	skill,
 } from "@atomist/skill";
+
 import { RebaseConfiguration } from "./lib/configuration";
 
 export const Skill = skill<RebaseConfiguration & { repos: any }>({
