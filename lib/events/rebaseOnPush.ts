@@ -25,18 +25,19 @@ import {
 } from "@atomist/skill";
 import { codeLine } from "@atomist/slack-messages";
 import * as _ from "lodash";
+
 import {
 	gitHubPullRequestCommentCreator,
 	gitHubPullRequestCommentUpdater,
 } from "../comment";
 import { RebaseConfiguration } from "../configuration";
-import { AutoRebaseOnPushLabel } from "./convergePullRequestAutoRebaseLabels";
 import {
 	PullRequestByRepoAndBranchQuery,
 	PullRequestByRepoAndBranchQueryVariables,
 	RebaseOnPushSubscription,
 } from "../typings/types";
 import { truncateCommitMessage } from "../util";
+import { AutoRebaseOnPushLabel } from "./convergePullRequestAutoRebaseLabels";
 
 export const handler: EventHandler<
 	RebaseOnPushSubscription,

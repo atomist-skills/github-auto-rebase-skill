@@ -15,6 +15,7 @@
  */
 
 import { EventContext, github, repository, secret } from "@atomist/skill";
+
 import { PullRequest } from "./typings/types";
 
 export interface GitHubCommentDetails {
