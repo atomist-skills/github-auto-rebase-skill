@@ -48,7 +48,7 @@ export const Skill = skill<RebaseConfiguration & { repos: any }>({
 			type: ParameterType.SingleChoice,
 			displayName: "Default merge strategy",
 			description:
-				"Select which merge strategy to use when rebasing pull request branches",
+				"Select which merge strategy to use when rebasing pull request branches. If no strategy is selected here, this skill will use the [default merge strategy of git](https://git-scm.com/docs/git-rebase#git-rebase--Xltstrategy-optiongt).",
 			options: [
 				{
 					text: "Recursive - Ours",
