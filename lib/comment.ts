@@ -61,7 +61,6 @@ export const gitHubPullRequestCommentCreator: PullRequestCommentCreator<GitHubCo
 				body,
 			})
 	).data;
-	await ctx.audit.log(body);
 	return {
 		apiUrl: pr.repo.org.provider.apiUrl,
 		owner: pr.repo.owner,
@@ -91,5 +90,4 @@ export const gitHubPullRequestCommentUpdater: PullRequestCommentUpdater<GitHubCo
 			comment_id: comment.id,
 			body,
 		});
-	await ctx.audit.log(body);
 };

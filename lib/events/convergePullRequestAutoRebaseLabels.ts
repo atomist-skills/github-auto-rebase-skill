@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EventHandler, github, repository, secret } from "@atomist/skill";
+import { EventHandler, github, log, repository, secret } from "@atomist/skill";
 
 import {
 	ConvergePullRequestAutoRebaseLabelsSubscription,
@@ -27,7 +27,7 @@ export const handler: EventHandler<ConvergePullRequestAutoRebaseLabelsSubscripti
 	const pr = ctx.data.PullRequest[0];
 
 	if (pr.action !== PullRequestAction.Opened) {
-		await ctx.audit.log(
+		log.info(
 			`Pull request ${pr.repo.owner}/${pr.repo.name}#${pr.number} action not opened. Ignoring...`,
 		);
 
@@ -45,16 +45,14 @@ export const handler: EventHandler<ConvergePullRequestAutoRebaseLabelsSubscripti
 	);
 
 	const id = repository.gitHub({ owner, repo: name, credential });
-	await ctx.audit.log(
-		`Converging auto-rebase label '${AutoRebaseOnPushLabel}'`,
-	);
+	log.info(`Converging auto-rebase label '${AutoRebaseOnPushLabel}'`);
 	await github.convergeLabel(
 		id,
 		AutoRebaseOnPushLabel,
 		"0E8A16",
 		"Auto-rebase pull request branch",
 	);
-	await ctx.audit.log(`Converged auto-rebase label 'AutoRebaseOnPushLabel'`);
+	log.info(`Converged auto-rebase label 'AutoRebaseOnPushLabel'`);
 	return {
 		code: 0,
 		reason: `Converged auto-rebase label for [${repo.owner}/${repo.name}](${repo.url})`,
