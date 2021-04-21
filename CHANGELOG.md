@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.3.1...HEAD)
 
+### Changed
+
+-   Update to new logging. [574c24b](https://github.com/atomist-skills/github-auto-rebase-skill/commit/574c24b350e4dcb96401ba72becbc2c6866b7bda)
+
 ## [2.3.1](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.3.0...2.3.1) - 2021-04-01
 
 ### Changed
