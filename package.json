@@ -1,6 +1,6 @@
 {
   "name": "@atomist/github-auto-rebase-skill",
-  "homepage": "https://github.com/atomist-skills/github-auto-rebase-skill",
+  "homepage": "https://github.com/atomist-skills/github-auto-rebase-skill#readme",
   "license": "Apache-2.0",
   "author": {
     "name": "Atomist, Inc.",
@@ -54,7 +54,7 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@atomist/npm-tools": "^0.1.1-master.0",
+    "@atomist/npm-tools": "^0.1.1-main.0",
     "@google-cloud/functions-framework": "^1.7.1",
     "@types/lodash": "^4.14.168",
     "@types/mocha": "^8.2.2",
