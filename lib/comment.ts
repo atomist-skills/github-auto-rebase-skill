@@ -39,55 +39,47 @@ export type PullRequestCommentUpdater<T> = (
 	body: string,
 ) => Promise<void>;
 
-export const gitHubPullRequestCommentCreator: PullRequestCommentCreator<GitHubCommentDetails> = async (
-	ctx,
-	pr,
-	credential,
-	body,
-) => {
-	const result = (
+export const gitHubPullRequestCommentCreator: PullRequestCommentCreator<GitHubCommentDetails> =
+	async (ctx, pr, credential, body) => {
+		const result = (
+			await github
+				.api(
+					repository.gitHub({
+						owner: pr.repo.owner,
+						repo: pr.repo.name,
+						credential,
+					}),
+				)
+				.issues.createComment({
+					owner: pr.repo.owner,
+					repo: pr.repo.name,
+					issue_number: pr.number,
+					body,
+				})
+		).data;
+		return {
+			apiUrl: pr.repo.org.provider.apiUrl,
+			owner: pr.repo.owner,
+			repo: pr.repo.name,
+			number: pr.number,
+			id: result.id,
+		};
+	};
+
+export const gitHubPullRequestCommentUpdater: PullRequestCommentUpdater<GitHubCommentDetails> =
+	async (ctx, comment, credential, body) => {
 		await github
 			.api(
 				repository.gitHub({
-					owner: pr.repo.owner,
-					repo: pr.repo.name,
+					owner: comment.owner,
+					repo: comment.repo,
 					credential,
 				}),
 			)
-			.issues.createComment({
-				owner: pr.repo.owner,
-				repo: pr.repo.name,
-				issue_number: pr.number,
-				body,
-			})
-	).data;
-	return {
-		apiUrl: pr.repo.org.provider.apiUrl,
-		owner: pr.repo.owner,
-		repo: pr.repo.name,
-		number: pr.number,
-		id: result.id,
-	};
-};
-
-export const gitHubPullRequestCommentUpdater: PullRequestCommentUpdater<GitHubCommentDetails> = async (
-	ctx,
-	comment,
-	credential,
-	body,
-) => {
-	await github
-		.api(
-			repository.gitHub({
+			.issues.updateComment({
 				owner: comment.owner,
 				repo: comment.repo,
-				credential,
-			}),
-		)
-		.issues.updateComment({
-			owner: comment.owner,
-			repo: comment.repo,
-			comment_id: comment.id,
-			body,
-		});
-};
+				comment_id: comment.id,
+				body,
+			});
+	};
