@@ -5,7 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.3.2...HEAD)
+## [Unreleased](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.3.3...HEAD)
+
+## [2.3.3](https://github.com/atomist-skills/github-auto-rebase-skill/compare/2.3.2...2.3.3) - 2021-08-18
 
 ### Added
 
