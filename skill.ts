@@ -61,6 +61,14 @@ export const Skill = skill<RebaseConfiguration & { repos: any }>({
 			],
 			required: false,
 		},
+		label: {
+			type: ParameterType.Boolean,
+			displayName: "Add rebase label",
+			description:
+				"Automatically add the rebase label to every new pull request",
+			required: false,
+			defaultValue: false,
+		},
 		repos: parameter.repoFilter({ required: false }),
 	},
 

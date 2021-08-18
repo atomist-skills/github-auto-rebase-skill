@@ -15,5 +15,6 @@
  */
 
 export interface RebaseConfiguration {
+	label?: boolean;
 	strategy?: "ours" | "theirs";
 }
